@@ -1,5 +1,6 @@
 # Custom Hint
-Plugin that allows you to display text on the player's screen.
+Plugin that allows you to display text on the player's screen.  
+For suggestions, please write to Discord: @narin4ik  
 
 **Default cfg:**   
 ```
