@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AdvancedHints">
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\AdvancedHints.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\Assembly-CSharp.dll</HintPath>
     </Reference>
@@ -46,8 +49,14 @@
     <Reference Include="Exiled.Events">
       <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\Exiled.Events.dll</HintPath>
     </Reference>
+    <Reference Include="HintAPI">
+      <HintPath>..\..\HintAPI\HintAPI\bin\Debug\HintAPI.dll</HintPath>
+    </Reference>
     <Reference Include="Mirror">
       <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\Mirror.dll</HintPath>
+    </Reference>
+    <Reference Include="PluginAPI">
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\PluginAPI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -63,9 +72,17 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="YamlDotNet %281%29, Version=11.0.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\YamlDotNet (1).dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomHintPlugin.cs" />
+    <Compile Include="Commands.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="EventHandlers.cs" />
+    <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextHint.cs" />
   </ItemGroup>
