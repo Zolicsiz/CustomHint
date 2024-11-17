@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using CommandSystem;
 using Exiled.API.Features;
 using Exiled.API.Interfaces;
@@ -23,7 +22,7 @@ namespace CustomHintPlugin
         public bool IsEnabled { get; set; } = true;
 
         [Description("Debug mode (bool)?")]
-        public bool Debug { get; set; } = true;
+        public bool Debug { get; set; } = false;
 
         [Description("Hint message for rounds lasting up to 59 seconds.")]
         public string HintMessageUnderMinute { get; set; } = "Quick start! {player_nickname}, round time: {round_duration_seconds}s.\nRole: {player_role}\nTPS: {tps}/60";
@@ -34,10 +33,10 @@ namespace CustomHintPlugin
         [Description("Hint message for rounds lasting 1 hour or more.")]
         public string HintMessageOverHour { get; set; } = "Long run, {player_nickname}! Duration: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.\nRole: {player_role}\nTPS: {tps}/60";
 
-        [Description("Default role name for players without a custom role.")]
+        [Description("Default role name for players without a role.")]
         public string DefaultRoleName { get; set; } = "Player";
 
-        [Description("Default role color (for players without custom roles).")]
+        [Description("Default role color (for players without roles).")]
         public string DefaultRoleColor { get; set; } = "white";
 
         [Description("Ignored roles")]
@@ -92,7 +91,7 @@ namespace CustomHintPlugin
 
         public override string Name => "CustomHint";
         public override string Author => "Narin";
-        public override Version Version => new Version(1, 6, 0);
+        public override Version Version => new Version(1, 1, 0);
 
         public override void OnEnabled()
         {
@@ -202,19 +201,28 @@ namespace CustomHintPlugin
         {
             try
             {
+                if (!Directory.Exists(HudConfigFolder))
+                {
+                    Directory.CreateDirectory(HudConfigFolder);
+                }
+
                 if (File.Exists(HudConfigFile))
                 {
                     string yamlContent = File.ReadAllText(HudConfigFile);
                     HiddenHudPlayers = Deserializer.Deserialize<HashSet<string>>(yamlContent) ?? new HashSet<string>();
+                    Log.Info($"Loaded {HiddenHudPlayers.Count} hidden HUD player(s) from the configuration file.");
                 }
                 else
                 {
-                    Directory.CreateDirectory(HudConfigFolder);
+                    HiddenHudPlayers = new HashSet<string>();
+                    SaveHiddenHudPlayers(); // Создаем файл с пустым списком.
+                    Log.Info("Hidden HUD players file not found. Created a new one with default settings.");
                 }
             }
             catch (Exception ex)
             {
                 Log.Warn($"Failed to load HUD configuration: {ex}");
+                HiddenHudPlayers = new HashSet<string>();
             }
         }
 
@@ -224,6 +232,7 @@ namespace CustomHintPlugin
             {
                 string yamlContent = Serializer.Serialize(HiddenHudPlayers);
                 File.WriteAllText(HudConfigFile, yamlContent);
+                Log.Info("Saved hidden HUD players to the configuration file.");
             }
             catch (Exception ex)
             {
@@ -263,6 +272,7 @@ namespace CustomHintPlugin
                     }
 
                     CustomHintPlugin.Instance.HiddenHudPlayers.Add(player.UserId);
+                    CustomHintPlugin.Instance.SaveHiddenHudPlayers();
                     response = CustomHintPlugin.Instance.Config.HideHudSuccessMessage;
                     return true;
                 }
@@ -304,6 +314,7 @@ namespace CustomHintPlugin
                     }
 
                     CustomHintPlugin.Instance.HiddenHudPlayers.Remove(player.UserId);
+                    CustomHintPlugin.Instance.SaveHiddenHudPlayers();
                     response = CustomHintPlugin.Instance.Config.ShowHudSuccessMessage;
                     return true;
                 }
