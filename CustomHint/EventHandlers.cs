@@ -1,9 +1,7 @@
-﻿using System;
+using System;
 using MEC;
 using Exiled.API.Features;
-using Exiled.Events.EventArgs.Server;
 using System.Collections.Generic;
-using HintAPI;
 
 namespace CustomHintPlugin
 {
@@ -21,7 +19,7 @@ namespace CustomHintPlugin
             _hintCoroutine = Timing.RunCoroutine(ContinuousHintDisplay());
         }
 
-        public void OnRoundEnded(RoundEndedEventArgs ev)
+        public void OnRoundEnded(Exiled.Events.EventArgs.Server.RoundEndedEventArgs ev)
         {
             Log.Info("Round ended, disabling hints.");
             _isRoundActive = false;
@@ -32,12 +30,14 @@ namespace CustomHintPlugin
         {
             while (_isRoundActive)
             {
+                TimeSpan roundDuration = DateTime.UtcNow - _roundStartTime;
+
                 foreach (var player in Player.List)
                 {
                     if (!CustomHintPlugin.Instance.Config.ExcludedRoles.Contains(player.Role.Type) &&
                         !CustomHintPlugin.Instance.HiddenHudPlayers.Contains(player.UserId))
                     {
-                        DisplayHint(player);
+                        DisplayHint(player, roundDuration);
                     }
                 }
 
@@ -45,10 +45,9 @@ namespace CustomHintPlugin
             }
         }
 
-        private void DisplayHint(Player player)
+        private void DisplayHint(Player player, TimeSpan roundDuration)
         {
-            var roundDuration = DateTime.UtcNow - _roundStartTime;
-            var hintMessage = CustomHintPlugin.Instance.Config.HintMessageUnderMinute
+            string hintMessage = GetHintMessage(roundDuration)
                 .Replace("{round_duration_hours}", roundDuration.Hours.ToString("D2"))
                 .Replace("{round_duration_minutes}", roundDuration.Minutes.ToString("D2"))
                 .Replace("{round_duration_seconds}", roundDuration.Seconds.ToString("D2"))
@@ -56,21 +55,28 @@ namespace CustomHintPlugin
                 .Replace("{player_role}", GetColoredRoleName(player))
                 .Replace("{tps}", Server.Tps.ToString("F1"));
 
-            string hintKey = $"CustomHint_{player.Id}";
-
-            HintAPI.HintAPI.Instance.HintManager.RemoveHint(player, hintKey);
-
-            HintAPI.HintAPI.Instance.HintManager.RegisterHint(player, hintMessage, 1f, 1, hintKey);
+            HintAPI.HintAPI.Instance.HintManager.RegisterHint(player, hintMessage, 1f, 1, $"CustomHint_{player.Id}");
         }
 
-
-
+        private string GetHintMessage(TimeSpan roundDuration)
+        {
+            if (roundDuration.TotalSeconds <= 59)
+                return CustomHintPlugin.Instance.Config.HintMessageUnderMinute;
+            if (roundDuration.TotalMinutes < 60)
+                return CustomHintPlugin.Instance.Config.HintMessageUnderHour;
+            return CustomHintPlugin.Instance.Config.HintMessageOverHour;
+        }
 
         private string GetColoredRoleName(Player player)
         {
-            return player.Group != null
-                ? $"<color={player.Group.BadgeColor ?? CustomHintPlugin.Instance.Config.DefaultRoleColor}>{player.Group.BadgeText}</color>"
-                : $"<color={CustomHintPlugin.Instance.Config.DefaultRoleColor}>{CustomHintPlugin.Instance.Config.DefaultRoleName}</color>";
+            if (player.Group != null)
+            {
+                string roleName = player.Group.BadgeText;
+                string roleColor = player.Group.BadgeColor ?? CustomHintPlugin.Instance.Config.DefaultRoleColor;
+                return $"<color={roleColor}>{roleName}</color>";
+            }
+
+            return $"<color={CustomHintPlugin.Instance.Config.DefaultRoleColor}>{CustomHintPlugin.Instance.Config.DefaultRoleName}</color>";
         }
     }
 }
