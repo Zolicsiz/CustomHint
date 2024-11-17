@@ -1,6 +1,7 @@
 # Custom Hint
 Plugin that allows you to display text on the player's screen.  
 It is recommended to use `AdvancedHints.dll` for convenience.  
+The plugin requires [HintAPI](https://github.com/BTF-SCPSL/HintAPI).  
 For suggestions, please write to Discord: @narin4ik  
 
 **Default cfg:**   
