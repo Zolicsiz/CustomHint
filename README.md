@@ -9,7 +9,7 @@ custom_hint:
 # Plugin enabled (bool)?
   is_enabled: true
   # Debug mode (bool)?
-  debug: true
+  debug: false
   # Hint message for rounds lasting up to 59 seconds.
   hint_message_under_minute: |-
     Quick start! {player_nickname}, round time: {round_duration_seconds}s.
