@@ -8,20 +8,29 @@ For suggestions, please write to Discord: @narin4ik
 custom_hint:
 # Plugin enabled (bool)?
   is_enabled: true
-  # Debug mode (bool)?
+  # Debug mode?
   debug: false
   # Hint message for rounds lasting up to 59 seconds.
   hint_message_under_minute: |-
+    {servername}
+    {ip}:{port}
+
     Quick start! {player_nickname}, round time: {round_duration_seconds}s.
     Role: {player_role}
     TPS: {tps}/60
   # Hint message for rounds lasting from 1 minute to 59 minutes and 59 seconds.
   hint_message_under_hour: |-
+    {servername}
+    {ip}:{port}
+
     Still going, {player_nickname}! Time: {round_duration_minutes}:{round_duration_seconds}.
     Role: {player_role}
     TPS: {tps}/60
   # Hint message for rounds lasting 1 hour or more.
   hint_message_over_hour: |-
+    {servername}
+    {ip}:{port}
+
     Long run, {player_nickname}! Duration: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.
     Role: {player_role}
     TPS: {tps}/60
@@ -34,6 +43,7 @@ custom_hint:
   - Overwatch
   - Spectator
   - Filmmaker
+  - Scp079
   # Enable or disable HUD-related commands (.hidehud and .showhud).
   enable_hud_commands: true
   # Message displayed when the HUD is successfully hidden.
@@ -52,9 +62,12 @@ custom_hint:
 **Placeholders:**  
 | Placeholder  | Description |
 | ------------- | ------------- |
+| {servername}  | Server name.  |
+| {ip}  | Server IP.  |
+| {port}  | Server port.  |
+| {tps}  | Server TPS.  |
 | {player_nickname}  | Player's nickname.  |
 | {player_role}  | Player Role.  |
 | {round_duration_seconds}  | Round duration in seconds.  |
 | {round_duration_minutes}  | Round duration in minutes.  |
 | {round_duration_hours}  | Round duration in hours.  |
-| {tps}  | Server TPS.  |
