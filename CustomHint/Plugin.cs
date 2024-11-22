@@ -5,7 +5,6 @@ using Exiled.API.Features;
 using MEC;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using HintAPI;
 
 namespace CustomHintPlugin
 {
@@ -28,6 +27,8 @@ namespace CustomHintPlugin
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
+        public bool IsHintSystemEnabled { get; internal set; } = true;
+
         public override string Name => "CustomHint";
         public override string Author => "Narin";
         public override Version Version => new Version(1, 2, 0);
@@ -38,7 +39,8 @@ namespace CustomHintPlugin
 
             if (!Config.IsEnabled)
             {
-                Log.Warn("Plugin is disabled in the configuration.");
+                Log.Info("Thanks for using the plugin!");
+                Log.Debug("Plugin is disabled in the configuration.");
                 return;
             }
 
@@ -48,7 +50,7 @@ namespace CustomHintPlugin
             Exiled.Events.Handlers.Server.RoundStarted += EventHandlers.OnRoundStarted;
             Exiled.Events.Handlers.Server.RoundEnded += EventHandlers.OnRoundEnded;
 
-            Log.Info($"{Name} has been enabled.");
+            Log.Debug($"{Name} has been enabled.");
             base.OnEnabled();
         }
 
@@ -63,7 +65,7 @@ namespace CustomHintPlugin
             Instance = null;
             EventHandlers = null;
 
-            Log.Info($"{Name} has been disabled.");
+            Log.Debug($"{Name} has been disabled.");
             base.OnDisabled();
         }
 
@@ -80,13 +82,13 @@ namespace CustomHintPlugin
                 {
                     string yamlContent = File.ReadAllText(HudConfigFile);
                     HiddenHudPlayers = Deserializer.Deserialize<HashSet<string>>(yamlContent) ?? new HashSet<string>();
-                    Log.Info($"Loaded {HiddenHudPlayers.Count} hidden HUD player(s).");
+                    Log.Debug($"Loaded {HiddenHudPlayers.Count} hidden HUD player(s).");
                 }
                 else
                 {
                     HiddenHudPlayers = new HashSet<string>();
                     SaveHiddenHudPlayers();
-                    Log.Info("Created new HUD configuration file.");
+                    Log.Debug("Created new HUD configuration file.");
                 }
             }
             catch (Exception ex)
@@ -102,11 +104,11 @@ namespace CustomHintPlugin
             {
                 string yamlContent = Serializer.Serialize(HiddenHudPlayers);
                 File.WriteAllText(HudConfigFile, yamlContent);
-                Log.Info("Saved hidden HUD players.");
+                Log.Debug("Saved hidden HUD players.");
             }
             catch (Exception ex)
             {
-                Log.Warn($"Failed to save hidden HUD players: {ex}");
+                Log.Debug($"Failed to save hidden HUD players: {ex}");
             }
         }
     }

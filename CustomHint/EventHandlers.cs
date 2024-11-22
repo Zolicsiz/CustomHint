@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using MEC;
 using Exiled.API.Features;
+using Exiled.Events.EventArgs.Server;
 using System.Collections.Generic;
 
 namespace CustomHintPlugin
@@ -13,16 +14,24 @@ namespace CustomHintPlugin
 
         public void OnRoundStarted()
         {
-            Log.Info("Round started, enabling hints.");
+            if (CustomHintPlugin.Instance.Config.Debug)
+                Log.Debug("Round started, enabling hints.");
+
             _isRoundActive = true;
             _roundStartTime = DateTime.UtcNow;
             _hintCoroutine = Timing.RunCoroutine(ContinuousHintDisplay());
         }
 
-        public void OnRoundEnded(Exiled.Events.EventArgs.Server.RoundEndedEventArgs ev)
+        public void OnRoundEnded(RoundEndedEventArgs ev)
         {
-            Log.Info("Round ended, disabling hints.");
+            if (CustomHintPlugin.Instance.Config.Debug)
+                Log.Debug("Round ended, disabling hints.");
+
             _isRoundActive = false;
+
+            // Сброс таймера
+            _roundStartTime = default;
+
             Timing.KillCoroutines(_hintCoroutine);
         }
 
@@ -30,14 +39,17 @@ namespace CustomHintPlugin
         {
             while (_isRoundActive)
             {
-                TimeSpan roundDuration = DateTime.UtcNow - _roundStartTime;
-
-                foreach (var player in Player.List)
+                if (CustomHintPlugin.Instance.IsHintSystemEnabled)
                 {
-                    if (!CustomHintPlugin.Instance.Config.ExcludedRoles.Contains(player.Role.Type) &&
-                        !CustomHintPlugin.Instance.HiddenHudPlayers.Contains(player.UserId))
+                    TimeSpan roundDuration = DateTime.UtcNow - _roundStartTime;
+
+                    foreach (var player in Player.List)
                     {
-                        DisplayHint(player, roundDuration);
+                        if (!CustomHintPlugin.Instance.Config.ExcludedRoles.Contains(player.Role.Type) &&
+                            !CustomHintPlugin.Instance.HiddenHudPlayers.Contains(player.UserId))
+                        {
+                            DisplayHint(player, roundDuration);
+                        }
                     }
                 }
 
@@ -47,15 +59,22 @@ namespace CustomHintPlugin
 
         private void DisplayHint(Player player, TimeSpan roundDuration)
         {
+            string serverName = Server.Name;
+            string serverIp = Server.IpAddress;
+            string serverPort = Server.Port.ToString();
+
             string hintMessage = GetHintMessage(roundDuration)
                 .Replace("{round_duration_hours}", roundDuration.Hours.ToString("D2"))
                 .Replace("{round_duration_minutes}", roundDuration.Minutes.ToString("D2"))
                 .Replace("{round_duration_seconds}", roundDuration.Seconds.ToString("D2"))
                 .Replace("{player_nickname}", player.Nickname)
                 .Replace("{player_role}", GetColoredRoleName(player))
-                .Replace("{tps}", Server.Tps.ToString("F1"));
+                .Replace("{tps}", Server.Tps.ToString("F1"))
+                .Replace("{servername}", serverName)
+                .Replace("{ip}", serverIp)
+                .Replace("{port}", serverPort);
 
-            HintAPI.HintAPI.Instance.HintManager.RegisterHint(player, hintMessage, 1f, 1, $"CustomHint_{player.Id}");
+            player.ShowHint(hintMessage, 1f);
         }
 
         private string GetHintMessage(TimeSpan roundDuration)
@@ -64,19 +83,15 @@ namespace CustomHintPlugin
                 return CustomHintPlugin.Instance.Config.HintMessageUnderMinute;
             if (roundDuration.TotalMinutes < 60)
                 return CustomHintPlugin.Instance.Config.HintMessageUnderHour;
+
             return CustomHintPlugin.Instance.Config.HintMessageOverHour;
         }
 
         private string GetColoredRoleName(Player player)
         {
-            if (player.Group != null)
-            {
-                string roleName = player.Group.BadgeText;
-                string roleColor = player.Group.BadgeColor ?? CustomHintPlugin.Instance.Config.DefaultRoleColor;
-                return $"<color={roleColor}>{roleName}</color>";
-            }
-
-            return $"<color={CustomHintPlugin.Instance.Config.DefaultRoleColor}>{CustomHintPlugin.Instance.Config.DefaultRoleName}</color>";
+            return player.Group != null
+                ? $"<color={player.Group.BadgeColor ?? CustomHintPlugin.Instance.Config.DefaultRoleColor}>{player.Group.BadgeText}</color>"
+                : $"<color={CustomHintPlugin.Instance.Config.DefaultRoleColor}>{CustomHintPlugin.Instance.Config.DefaultRoleName}</color>";
         }
     }
 }

@@ -49,9 +49,6 @@
     <Reference Include="Exiled.Events">
       <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\Exiled.Events.dll</HintPath>
     </Reference>
-    <Reference Include="HintAPI">
-      <HintPath>..\..\HintAPI\HintAPI\bin\Debug\HintAPI.dll</HintPath>
-    </Reference>
     <Reference Include="Mirror">
       <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\Mirror.dll</HintPath>
     </Reference>
@@ -79,6 +76,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChToggleCommand.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="EventHandlers.cs" />
