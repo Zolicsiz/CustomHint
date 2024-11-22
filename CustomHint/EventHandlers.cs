@@ -29,7 +29,6 @@ namespace CustomHintPlugin
 
             _isRoundActive = false;
 
-            // Сброс таймера
             _roundStartTime = default;
 
             Timing.KillCoroutines(_hintCoroutine);
