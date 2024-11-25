@@ -14,9 +14,9 @@ namespace CustomHintPlugin
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            if (!CustomHintPlugin.Instance.Config.EnableHudCommands)
+            if (!Plugin.Instance.Config.EnableHudCommands)
             {
-                response = CustomHintPlugin.Instance.Config.CommandDisabledMessage;
+                response = Plugin.Instance.Config.CommandDisabledMessage;
                 return false;
             }
 
@@ -26,19 +26,19 @@ namespace CustomHintPlugin
 
                 if (player == null || player.DoNotTrack)
                 {
-                    response = CustomHintPlugin.Instance.Config.DntEnabledMessage;
+                    response = Plugin.Instance.Config.DntEnabledMessage;
                     return false;
                 }
 
-                if (CustomHintPlugin.Instance.HiddenHudPlayers.Contains(player.UserId))
+                if (Plugin.Instance.HiddenHudPlayers.Contains(player.UserId))
                 {
-                    response = CustomHintPlugin.Instance.Config.HideHudAlreadyHiddenMessage;
+                    response = Plugin.Instance.Config.HideHudAlreadyHiddenMessage;
                     return false;
                 }
 
-                CustomHintPlugin.Instance.HiddenHudPlayers.Add(player.UserId);
-                CustomHintPlugin.Instance.SaveHiddenHudPlayers();
-                response = CustomHintPlugin.Instance.Config.HideHudSuccessMessage;
+                Plugin.Instance.HiddenHudPlayers.Add(player.UserId);
+                Plugin.Instance.SaveHiddenHudPlayers();
+                response = Plugin.Instance.Config.HideHudSuccessMessage;
                 return true;
             }
 
@@ -56,9 +56,9 @@ namespace CustomHintPlugin
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            if (!CustomHintPlugin.Instance.Config.EnableHudCommands)
+            if (!Plugin.Instance.Config.EnableHudCommands)
             {
-                response = CustomHintPlugin.Instance.Config.CommandDisabledMessage;
+                response = Plugin.Instance.Config.CommandDisabledMessage;
                 return false;
             }
 
@@ -68,19 +68,19 @@ namespace CustomHintPlugin
 
                 if (player == null || player.DoNotTrack)
                 {
-                    response = CustomHintPlugin.Instance.Config.DntEnabledMessage;
+                    response = Plugin.Instance.Config.DntEnabledMessage;
                     return false;
                 }
 
-                if (!CustomHintPlugin.Instance.HiddenHudPlayers.Contains(player.UserId))
+                if (!Plugin.Instance.HiddenHudPlayers.Contains(player.UserId))
                 {
-                    response = CustomHintPlugin.Instance.Config.ShowHudAlreadyShownMessage;
+                    response = Plugin.Instance.Config.ShowHudAlreadyShownMessage;
                     return false;
                 }
 
-                CustomHintPlugin.Instance.HiddenHudPlayers.Remove(player.UserId);
-                CustomHintPlugin.Instance.SaveHiddenHudPlayers();
-                response = CustomHintPlugin.Instance.Config.ShowHudSuccessMessage;
+                Plugin.Instance.HiddenHudPlayers.Remove(player.UserId);
+                Plugin.Instance.SaveHiddenHudPlayers();
+                response = Plugin.Instance.Config.ShowHudSuccessMessage;
                 return true;
             }
 

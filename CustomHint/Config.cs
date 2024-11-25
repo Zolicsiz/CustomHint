@@ -11,7 +11,7 @@ namespace CustomHintPlugin
         public bool IsEnabled { get; set; } = true;
 
         [Description("Debug mode?")]
-        public bool Debug { get; set; } = false;
+        public bool Debug { get; set; } = true;
 
         [Description("Hint message for rounds lasting up to 59 seconds.")]
         public string HintMessageUnderMinute { get; set; } = "{servername}\n{ip}:{port}\n\nQuick start! {player_nickname}, round time: {round_duration_seconds}s.\nRole: {player_role}\nTPS: {tps}/60";

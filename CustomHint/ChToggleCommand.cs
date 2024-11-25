@@ -15,7 +15,7 @@ namespace CustomHintPlugin
         {
             if (sender is CommandSender)
             {
-                var plugin = CustomHintPlugin.Instance;
+                var plugin = Plugin.Instance;
 
                 plugin.IsHintSystemEnabled = !plugin.IsHintSystemEnabled;
 

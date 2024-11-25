@@ -8,16 +8,15 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace CustomHintPlugin
 {
-    public class CustomHintPlugin : Plugin<Config>
+    public class Plugin : Plugin<Config>
     {
-        public static CustomHintPlugin Instance { get; private set; }
+        public static Plugin Instance { get; private set; }
         public EventHandlers EventHandlers { get; private set; }
         public HashSet<string> HiddenHudPlayers { get; private set; } = new HashSet<string>();
 
         private CoroutineHandle _hintCoroutine;
 
-        private const string HudConfigFolder = "Exiled/Configs/CustomHint";
-        private const string HudConfigFile = HudConfigFolder + "/HiddenHudPlayers.yml";
+        private string HudConfig = FileDotNet.GetPath("HiddenHudPlayers.yml");
 
         private static readonly IDeserializer Deserializer = new DeserializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
@@ -31,7 +30,7 @@ namespace CustomHintPlugin
 
         public override string Name => "CustomHint";
         public override string Author => "Narin";
-        public override Version Version => new Version(1, 2, 0);
+        public override Version Version => new Version(1, 2, 1);
 
         public override void OnEnabled()
         {
@@ -39,14 +38,13 @@ namespace CustomHintPlugin
 
             if (!Config.IsEnabled)
             {
-                Log.Info("Thanks for using the plugin!");
-                Log.Debug("Plugin is disabled in the configuration.");
                 return;
             }
 
             LoadHiddenHudPlayers();
 
             EventHandlers = new EventHandlers();
+            Exiled.Events.Handlers.Server.WaitingForPlayers += EventHandlers.OnWaitingForPlayers;
             Exiled.Events.Handlers.Server.RoundStarted += EventHandlers.OnRoundStarted;
             Exiled.Events.Handlers.Server.RoundEnded += EventHandlers.OnRoundEnded;
 
@@ -56,6 +54,7 @@ namespace CustomHintPlugin
 
         public override void OnDisabled()
         {
+            Exiled.Events.Handlers.Server.WaitingForPlayers -= EventHandlers.OnWaitingForPlayers;
             Exiled.Events.Handlers.Server.RoundStarted -= EventHandlers.OnRoundStarted;
             Exiled.Events.Handlers.Server.RoundEnded -= EventHandlers.OnRoundEnded;
 
@@ -69,18 +68,20 @@ namespace CustomHintPlugin
             base.OnDisabled();
         }
 
+
         public void LoadHiddenHudPlayers()
         {
             try
             {
-                if (!Directory.Exists(HudConfigFolder))
+                string directory = Path.GetDirectoryName(HudConfig);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                 {
-                    Directory.CreateDirectory(HudConfigFolder);
+                    Directory.CreateDirectory(directory);
                 }
 
-                if (File.Exists(HudConfigFile))
+                if (File.Exists(HudConfig))
                 {
-                    string yamlContent = File.ReadAllText(HudConfigFile);
+                    string yamlContent = File.ReadAllText(HudConfig);
                     HiddenHudPlayers = Deserializer.Deserialize<HashSet<string>>(yamlContent) ?? new HashSet<string>();
                     Log.Debug($"Loaded {HiddenHudPlayers.Count} hidden HUD player(s).");
                 }
@@ -102,14 +103,35 @@ namespace CustomHintPlugin
         {
             try
             {
-                string yamlContent = Serializer.Serialize(HiddenHudPlayers);
-                File.WriteAllText(HudConfigFile, yamlContent);
+                var validPlayers = new HashSet<string>();
+                foreach (var userId in HiddenHudPlayers)
+                {
+                    var player = Player.Get(userId);
+                    if (player == null || !player.DoNotTrack)
+                    {
+                        validPlayers.Add(userId);
+                    }
+                }
+
+                string yamlContent = Serializer.Serialize(validPlayers);
+
+                yamlContent = "# List of SteamID64 players who have HUD disabled.\n" + yamlContent;
+
+                File.WriteAllText(HudConfig, yamlContent);
                 Log.Debug("Saved hidden HUD players.");
             }
             catch (Exception ex)
             {
-                Log.Debug($"Failed to save hidden HUD players: {ex}");
+                Log.Warn($"Failed to save hidden HUD players: {ex}");
             }
+        }
+
+        public bool IsHudHiddenForPlayer(Player player)
+        {
+            if (player.DoNotTrack)
+                return false;
+
+            return HiddenHudPlayers.Contains(player.UserId);
         }
     }
 }
