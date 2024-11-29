@@ -48,9 +48,9 @@ custom_hint:
     Long run, {player_nickname}! Duration: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.
     Role: {player_role}
     TPS: {tps}/60
-  # Default role name for players without a custom role.
+  # Default role name for players without a role.
   default_role_name: 'Player'
-  # Default role color (for players without custom roles).
+  # Default role color (for players without roles).
   default_role_color: 'white'
   # Ignored roles.
   excluded_roles:
