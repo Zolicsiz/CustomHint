@@ -11,7 +11,16 @@ namespace CustomHintPlugin
         public bool IsEnabled { get; set; } = true;
 
         [Description("Debug mode?")]
-        public bool Debug { get; set; } = true;
+        public bool Debug { get; set; } = false;
+
+        [Description("Enable or disable hints for spectators.")]
+        public bool HintForSpectatorsIsEnabled { get; set; } = true;
+
+        [Description("The interval for changing spectator hints (in seconds).")]
+        public float HintMessageTime { get; set; } = 5f;
+
+        [Description("Hint message for spectators.")]
+        public string HintMessageForSpectators { get; set; } = "{servername}\n{ip}:{port}\n\n{player_nickname}, spec, duration: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.\nRole: {player_role}\nTPS: {tps}/60\n\n{hints}";
 
         [Description("Hint message for rounds lasting up to 59 seconds.")]
         public string HintMessageUnderMinute { get; set; } = "{servername}\n{ip}:{port}\n\nQuick start! {player_nickname}, round time: {round_duration_seconds}s.\nRole: {player_role}\nTPS: {tps}/60";
@@ -22,17 +31,16 @@ namespace CustomHintPlugin
         [Description("Hint message for rounds lasting 1 hour or more.")]
         public string HintMessageOverHour { get; set; } = "{servername}\n{ip}:{port}\n\nLong run, {player_nickname}! Duration: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.\nRole: {player_role}\nTPS: {tps}/60";
 
-        [Description("Default role name for players without a custom role.")]
+        [Description("Default role name for players without a role.")]
         public string DefaultRoleName { get; set; } = "Player";
 
-        [Description("Default role color (for players without custom roles).")]
+        [Description("Default role color (for players without roles).")]
         public string DefaultRoleColor { get; set; } = "white";
 
         [Description("Ignored roles.")]
         public List<RoleTypeId> ExcludedRoles { get; set; } = new List<RoleTypeId>
         {
             RoleTypeId.Overwatch,
-            RoleTypeId.Spectator,
             RoleTypeId.Filmmaker,
             RoleTypeId.Scp079
         };

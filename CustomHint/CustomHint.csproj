@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="AdvancedHints">
       <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\AdvancedHints.dll</HintPath>
     </Reference>
