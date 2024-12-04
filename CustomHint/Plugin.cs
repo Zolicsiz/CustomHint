@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Exiled.API.Features;
@@ -30,33 +30,37 @@ namespace CustomHintPlugin
 
         public override string Name => "CustomHint";
         public override string Author => "Narin";
-        public override Version Version => new Version(1, 2, 3);
+        public override Version Version => new Version(1, 2, 2);
+        public override Version RequiredExiledVersion => new Version(8, 14, 0);
 
         public override void OnEnabled()
         {
             Instance = this;
 
             if (!Config.IsEnabled)
-            {
                 return;
-            }
 
             LoadHiddenHudPlayers();
-
             EventHandlers = new EventHandlers();
+
             Exiled.Events.Handlers.Server.WaitingForPlayers += EventHandlers.OnWaitingForPlayers;
             Exiled.Events.Handlers.Server.RoundStarted += EventHandlers.OnRoundStarted;
             Exiled.Events.Handlers.Server.RoundEnded += EventHandlers.OnRoundEnded;
 
+            Exiled.Events.Handlers.Player.Verified += EventHandlers.OnPlayerVerified;
+
             Log.Debug($"{Name} has been enabled.");
             base.OnEnabled();
         }
+
 
         public override void OnDisabled()
         {
             Exiled.Events.Handlers.Server.WaitingForPlayers -= EventHandlers.OnWaitingForPlayers;
             Exiled.Events.Handlers.Server.RoundStarted -= EventHandlers.OnRoundStarted;
             Exiled.Events.Handlers.Server.RoundEnded -= EventHandlers.OnRoundEnded;
+
+            Exiled.Events.Handlers.Player.Verified -= EventHandlers.OnPlayerVerified;
 
             Timing.KillCoroutines(_hintCoroutine);
             SaveHiddenHudPlayers();
@@ -67,6 +71,7 @@ namespace CustomHintPlugin
             Log.Debug($"{Name} has been disabled.");
             base.OnDisabled();
         }
+
 
         public void LoadHiddenHudPlayers()
         {
@@ -166,13 +171,26 @@ namespace CustomHintPlugin
 
             foreach (var pair in colorMapping)
             {
-                string oldTag = $"<color={pair.Key}>";
-                string newTag = $"<color={pair.Value}>";
-                input = input.Replace(oldTag, newTag, StringComparison.OrdinalIgnoreCase);
+                input = ReplaceIgnoreCase(input, $"<color={pair.Key}>", $"<color={pair.Value}>");
             }
 
-            input = input.Replace(serverNamePlaceholder, "{servername}");
+            input = input.Replace(serverNamePlaceholder, "{servername}"); // Возвращаем плейсхолдер
+
             return input;
         }
+
+        private static string ReplaceIgnoreCase(string input, string oldValue, string newValue)
+        {
+            int index = input.IndexOf(oldValue, StringComparison.OrdinalIgnoreCase);
+
+            while (index != -1)
+            {
+                input = input.Remove(index, oldValue.Length).Insert(index, newValue);
+                index = input.IndexOf(oldValue, index + newValue.Length, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return input;
+        }
+
     }
 }
