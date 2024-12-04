@@ -26,8 +26,8 @@ jobs:
       run: nuget restore YourSolution.sln
 
     - name: Build solution
-      run: msbuild YourSolution.sln /p:Configuration=Release
+      run: msbuild CustomHint.sln /p:Configuration=Release
 
     - name: Run tests
       run: |
-        vstest.console.exe path\to\your\tests.dll
+        vstest.console.exe CustomHint\bin\Debug\CustomHint.dll
