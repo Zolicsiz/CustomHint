@@ -11,7 +11,7 @@
 ### Настройка плагина
 Начнём с самого лёгкого, а именно с `[port]-config.yml`. Используя комбинацию *CTRL+F* и вписывая `custom_hint`, находим конфигурацию плагина.  
 Дефолтная конфигурация `[port]-config.yml` выглядит вот так, там рассписаны все пункты:
-```
+```yaml
 custom_hint:
   # Включен ли плагин (bool)?
   is_enabled: true
@@ -35,7 +35,7 @@ custom_hint:
 ```
 После того как настроили `[port]-config.yml`, переходим в `[port]-translation.yml`, снова используем комбинацию *CTRL+F* и вписываем `custom_hint`.  
 Там увидим следующее:
-```
+```yaml
 custom_hint:
   # Hint для наблюдателей.
   hint_message_for_spectators: |-
