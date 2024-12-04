@@ -1,4 +1,4 @@
-﻿using CommandSystem;
+using CommandSystem;
 using Exiled.API.Features;
 using RemoteAdmin;
 using System;
@@ -16,7 +16,7 @@ namespace CustomHintPlugin
         {
             if (!Plugin.Instance.Config.EnableHudCommands)
             {
-                response = Plugin.Instance.Config.CommandDisabledMessage;
+                response = Plugin.Instance.Translation.CommandDisabledMessage;
                 return false;
             }
 
@@ -26,19 +26,19 @@ namespace CustomHintPlugin
 
                 if (player == null || player.DoNotTrack)
                 {
-                    response = Plugin.Instance.Config.DntEnabledMessage;
+                    response = Plugin.Instance.Translation.DntEnabledMessage;
                     return false;
                 }
 
                 if (Plugin.Instance.HiddenHudPlayers.Contains(player.UserId))
                 {
-                    response = Plugin.Instance.Config.HideHudAlreadyHiddenMessage;
+                    response = Plugin.Instance.Translation.HideHudAlreadyHiddenMessage;
                     return false;
                 }
 
                 Plugin.Instance.HiddenHudPlayers.Add(player.UserId);
                 Plugin.Instance.SaveHiddenHudPlayers();
-                response = Plugin.Instance.Config.HideHudSuccessMessage;
+                response = Plugin.Instance.Translation.HideHudSuccessMessage;
                 return true;
             }
 
@@ -58,7 +58,7 @@ namespace CustomHintPlugin
         {
             if (!Plugin.Instance.Config.EnableHudCommands)
             {
-                response = Plugin.Instance.Config.CommandDisabledMessage;
+                response = Plugin.Instance.Translation.CommandDisabledMessage;
                 return false;
             }
 
@@ -68,19 +68,19 @@ namespace CustomHintPlugin
 
                 if (player == null || player.DoNotTrack)
                 {
-                    response = Plugin.Instance.Config.DntEnabledMessage;
+                    response = Plugin.Instance.Translation.DntEnabledMessage;
                     return false;
                 }
 
                 if (!Plugin.Instance.HiddenHudPlayers.Contains(player.UserId))
                 {
-                    response = Plugin.Instance.Config.ShowHudAlreadyShownMessage;
+                    response = Plugin.Instance.Translation.ShowHudAlreadyShownMessage;
                     return false;
                 }
 
                 Plugin.Instance.HiddenHudPlayers.Remove(player.UserId);
                 Plugin.Instance.SaveHiddenHudPlayers();
-                response = Plugin.Instance.Config.ShowHudSuccessMessage;
+                response = Plugin.Instance.Translation.ShowHudSuccessMessage;
                 return true;
             }
 
