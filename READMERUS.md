@@ -104,4 +104,4 @@ custom_hint:
 | {round_duration_seconds} | Длительность раунда в секундах.    |
 | {round_duration_minutes} | Длительность раунда в минутах.    |
 | {round_duration_hours}   | Длительность раунда в часах.      |
-| {hints}           | Подсказки из файла Hints.txt.  |
+| {hints}           | Hints из файла Hints.txt.  |
