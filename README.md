@@ -6,7 +6,6 @@
 ![License](https://img.shields.io/github/license/BTF-SCPSL/CustomHint?label=License&style=flat-square)
 ![Contributors](https://img.shields.io/github/contributors/BTF-SCPSL/CustomHint?label=Contributors&style=flat-square)
 ![Issues](https://img.shields.io/github/issues/BTF-SCPSL/CustomHint?label=Issues&style=flat-square)
-![Discord](https://img.shields.io/discord/755677851554152508?label=Discord&style=flat-square&color=8DBBE9)  
 
 </div>
 
