@@ -1,4 +1,10 @@
 # Custom Hint
+![Version](https://img.shields.io/github/v/release/BTF-SCPSL/CustomHint?label=Version)
+![License](https://img.shields.io/github/license/BTF-SCPSL/CustomHint?label=License)
+![Contributors](https://img.shields.io/github/contributors/BTF-SCPSL/CustomHint?label=Contributors)
+![Issues](https://img.shields.io/github/issues/BTF-SCPSL/CustomHint?label=Issues)
+![Discord](https://img.shields.io/discord/755677851554152508?label=Discord)  
+  
 Plugin that allows you to display text on the player's screen.  
 It is recommended to use `AdvancedHints.dll` for convenience.  
 For suggestions, please write to Discord: @narin4ik  
