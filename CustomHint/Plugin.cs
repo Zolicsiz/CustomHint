@@ -35,7 +35,7 @@ namespace CustomHintPlugin
 
         public override string Name => "CustomHint";
         public override string Author => "Narin";
-        public override Version Version => new Version(1, 3, 0);
+        public override Version Version => new Version(1, 3, 1);
         public override Version RequiredExiledVersion => new Version(8, 14, 0);
 
         public override void OnEnabled()
