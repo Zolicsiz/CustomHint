@@ -70,13 +70,11 @@ namespace CustomHintPlugin
             if (Plugin.Instance.HiddenHudPlayers.Contains(player.UserId))
             {
                 Log.Debug($"Player {player.Nickname} ({player.UserId}) is in HiddenHudPlayers. HUD will be hidden.");
-
                 Plugin.Instance.IsHintSystemEnabled = false;
             }
             else
             {
                 Log.Debug($"Player {player.Nickname} ({player.UserId}) is not in HiddenHudPlayers. HUD will be shown.");
-
                 Plugin.Instance.IsHintSystemEnabled = true;
             }
         }
@@ -176,11 +174,11 @@ namespace CustomHintPlugin
             string hintMessage;
 
             if (roundDuration.TotalSeconds <= 59)
-                hintMessage = Plugin.Instance.Config.HintMessageUnderMinute;
+                hintMessage = Plugin.Instance.Translation.HintMessageUnderMinute;
             else if (roundDuration.TotalMinutes < 60)
-                hintMessage = Plugin.Instance.Config.HintMessageUnderHour;
+                hintMessage = Plugin.Instance.Translation.HintMessageUnderHour;
             else
-                hintMessage = Plugin.Instance.Config.HintMessageOverHour;
+                hintMessage = Plugin.Instance.Translation.HintMessageOverHour;
 
             hintMessage = hintMessage
                 .Replace("{round_duration_hours}", roundDuration.Hours.ToString("D2"))
@@ -206,7 +204,7 @@ namespace CustomHintPlugin
 
             string currentHint = randomizedHints.Peek();
 
-            string hintMessage = Plugin.Instance.Config.HintMessageForSpectators
+            string hintMessage = Plugin.Instance.Translation.HintMessageForSpectators
                 .Replace("{round_duration_hours}", roundDuration.Hours.ToString("D2"))
                 .Replace("{round_duration_minutes}", roundDuration.Minutes.ToString("D2"))
                 .Replace("{round_duration_seconds}", roundDuration.Seconds.ToString("D2"))
