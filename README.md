@@ -1,5 +1,5 @@
 <h1 align="center">CustomHint</h1>
-<h6 align="center">Plugin that allows you to display text on the player's screen. </h6>
+<h6 align="center">A plugin that allows you to create your own custom HUD for the server.</h6>
 <div align="center">
   
 ![Version](https://img.shields.io/github/v/release/BTF-SCPSL/CustomHint?label=Version&style=flat-square)
