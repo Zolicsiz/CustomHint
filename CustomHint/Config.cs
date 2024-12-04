@@ -13,6 +13,9 @@ namespace CustomHintPlugin
         [Description("Debug mode?")]
         public bool Debug { get; set; } = false;
 
+        [Description("Enable or disable automatic plugin updates.")]
+        public bool AutoUpdater { get; set; } = true;
+
         [Description("Enable or disable hints for spectators.")]
         public bool HintForSpectatorsIsEnabled { get; set; } = true;
 
