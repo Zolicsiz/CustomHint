@@ -11,12 +11,13 @@ namespace CustomHintPlugin
 {
     public class EventHandlers
     {
+        private CoroutineHandle _hintUpdaterCoroutine;
         private CoroutineHandle _hintCoroutine;
-        private CoroutineHandle _spectatorHintCoroutine;
         private DateTime _roundStartTime;
         private bool _isRoundActive;
-        private List<string> spectatorHints = new List<string>();
+        private List<string> hints = new List<string>();
         private Queue<string> randomizedHints = new Queue<string>();
+        private List<string> spectatorHints = new List<string>();
 
         public void OnWaitingForPlayers()
         {
@@ -38,8 +39,9 @@ namespace CustomHintPlugin
             _isRoundActive = true;
             _roundStartTime = DateTime.UtcNow;
 
+            LoadHints();
             LoadSpectatorHints();
-            StartSpectatorHints();
+            StartHintUpdater();
             _hintCoroutine = Timing.RunCoroutine(ContinuousHintDisplay());
         }
 
@@ -52,9 +54,7 @@ namespace CustomHintPlugin
             _roundStartTime = default;
 
             Timing.KillCoroutines(_hintCoroutine);
-            Timing.KillCoroutines(_spectatorHintCoroutine);
-
-            randomizedHints.Clear();
+            StopHintUpdater();
         }
 
         public void OnPlayerVerified(Exiled.Events.EventArgs.Player.VerifiedEventArgs ev)
@@ -81,6 +81,59 @@ namespace CustomHintPlugin
             }
         }
 
+        public void LoadHints()
+        {
+            string hintsFilePath = FileDotNet.GetPath("Hints.txt");
+
+            try
+            {
+                if (File.Exists(hintsFilePath))
+                {
+                    hints = File.ReadAllLines(hintsFilePath)
+                        .Where(line => !line.TrimStart().StartsWith("#") && !string.IsNullOrWhiteSpace(line))
+                        .ToList();
+
+                    Log.Debug($"Loaded {hints.Count} hints from Hints.txt.");
+                }
+                else
+                {
+                    Log.Warn("Hints.txt not found. No hints loaded.");
+                    hints = new List<string>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warn($"Failed to load Hints.txt: {ex}");
+                hints = new List<string>();
+            }
+        }
+
+        public void LoadSpectatorHints()
+        {
+            string hintsFilePath = FileDotNet.GetPath("Hints.txt");
+
+            try
+            {
+                if (File.Exists(hintsFilePath))
+                {
+                    spectatorHints = File.ReadAllLines(hintsFilePath)
+                        .Where(line => !line.TrimStart().StartsWith("#") && !string.IsNullOrWhiteSpace(line))
+                        .ToList();
+
+                    Log.Debug($"Loaded {spectatorHints.Count} spectator hints.");
+                }
+                else
+                {
+                    Log.Warn("Hints.txt not found. No hints loaded.");
+                    spectatorHints = new List<string>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warn($"Failed to load Hints.txt: {ex}");
+                spectatorHints = new List<string>();
+            }
+        }
 
         private IEnumerator<float> ContinuousHintDisplay()
         {
@@ -120,16 +173,14 @@ namespace CustomHintPlugin
             if (Plugin.Instance.IsHudHiddenForPlayer(player))
                 return;
 
-            if (randomizedHints.Count == 0)
-                return;
+            string hintMessage;
 
-            string currentHint = randomizedHints.Peek();
-
-            string hintMessage = (roundDuration.TotalSeconds <= 59)
-                ? Plugin.Instance.Config.HintMessageUnderMinute
-                : (roundDuration.TotalMinutes < 60)
-                ? Plugin.Instance.Config.HintMessageUnderHour
-                : Plugin.Instance.Config.HintMessageOverHour;
+            if (roundDuration.TotalSeconds <= 59)
+                hintMessage = Plugin.Instance.Config.HintMessageUnderMinute;
+            else if (roundDuration.TotalMinutes < 60)
+                hintMessage = Plugin.Instance.Config.HintMessageUnderHour;
+            else
+                hintMessage = Plugin.Instance.Config.HintMessageOverHour;
 
             hintMessage = hintMessage
                 .Replace("{round_duration_hours}", roundDuration.Hours.ToString("D2"))
@@ -141,7 +192,7 @@ namespace CustomHintPlugin
                 .Replace("{servername}", Server.Name)
                 .Replace("{ip}", Server.IpAddress)
                 .Replace("{port}", Server.Port.ToString())
-                .Replace("{hints}", currentHint);
+                .Replace("{hints}", CurrentHint);
 
             hintMessage = Plugin.ReplaceColorsInString(hintMessage);
 
@@ -172,62 +223,44 @@ namespace CustomHintPlugin
             player.ShowHint(hintMessage, 1f);
         }
 
-        private string GetColoredRoleName(Player player)
-        {
-            return player.Group != null
-                ? $"<color={player.Group.BadgeColor ?? Plugin.Instance.Config.DefaultRoleColor}>{player.Group.BadgeText}</color>"
-                : $"<color={Plugin.Instance.Config.DefaultRoleColor}>{Plugin.Instance.Config.DefaultRoleName}</color>";
-        }
+        public string CurrentHint { get; private set; } = "Hint not available";
 
-        private void StartSpectatorHints()
-        {
-            _spectatorHintCoroutine = Timing.RunCoroutine(SpectatorHintUpdater());
-        }
-
-        private IEnumerator<float> SpectatorHintUpdater()
+        private IEnumerator<float> HintUpdater()
         {
             while (_isRoundActive)
             {
-                if (randomizedHints.Count == 0 && spectatorHints.Count > 0)
+                if (randomizedHints.Count == 0 && hints.Count > 0)
                 {
-                    randomizedHints = new Queue<string>(spectatorHints.OrderBy(_ => Guid.NewGuid()));
-                    Log.Debug("Refilled spectator hints queue.");
+                    randomizedHints = new Queue<string>(hints.OrderBy(_ => Guid.NewGuid()));
+                    Log.Debug("Refilled hints queue.");
                 }
 
                 if (randomizedHints.Count > 0)
                 {
-                    randomizedHints.Dequeue();
+                    CurrentHint = randomizedHints.Dequeue();
+                    Log.Debug($"Updated current hint: {CurrentHint}");
                 }
 
                 yield return Timing.WaitForSeconds(Plugin.Instance.Config.HintMessageTime);
             }
         }
 
-        public void LoadSpectatorHints()
+        private void StartHintUpdater()
         {
-            string hintsFilePath = FileDotNet.GetPath("SpectatorHints.txt");
+            _hintUpdaterCoroutine = Timing.RunCoroutine(HintUpdater());
+        }
 
-            try
-            {
-                if (File.Exists(hintsFilePath))
-                {
-                    spectatorHints = File.ReadAllLines(hintsFilePath)
-                        .Where(line => !line.TrimStart().StartsWith("#") && !string.IsNullOrWhiteSpace(line))
-                        .ToList();
+        private void StopHintUpdater()
+        {
+            Timing.KillCoroutines(_hintUpdaterCoroutine);
+            CurrentHint = "Hint not available";
+        }
 
-                    Log.Debug($"Loaded {spectatorHints.Count} spectator hints.");
-                }
-                else
-                {
-                    Log.Warn("SpectatorHints.txt not found. No hints loaded.");
-                    spectatorHints = new List<string>();
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Warn($"Failed to load SpectatorHints.txt: {ex}");
-                spectatorHints = new List<string>();
-            }
+        private string GetColoredRoleName(Player player)
+        {
+            return player.Group != null
+                ? $"<color={player.Group.BadgeColor ?? Plugin.Instance.Config.DefaultRoleColor}>{player.Group.BadgeText}</color>"
+                : $"<color={Plugin.Instance.Config.DefaultRoleColor}>{Plugin.Instance.Config.DefaultRoleName}</color>";
         }
     }
 }
