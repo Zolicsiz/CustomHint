@@ -17,7 +17,7 @@ namespace CustomHintPlugin
         private bool _isRoundActive;
         private List<string> hints = new List<string>();
         private Queue<string> randomizedHints = new Queue<string>();
-        private List<string> spectatorHints = new List<string>();
+        private string PreviousHint { get; set; }
 
         public void OnWaitingForPlayers()
         {
@@ -28,7 +28,7 @@ namespace CustomHintPlugin
 
             Timing.KillCoroutines(_hintCoroutine);
 
-            Plugin.Instance.HiddenHudPlayers.Clear();
+            Plugin.Instance.SaveHiddenHudPlayers();
         }
 
         public void OnRoundStarted()
@@ -40,7 +40,6 @@ namespace CustomHintPlugin
             _roundStartTime = DateTime.UtcNow;
 
             LoadHints();
-            LoadSpectatorHints();
             StartHintUpdater();
             _hintCoroutine = Timing.RunCoroutine(ContinuousHintDisplay());
         }
@@ -63,19 +62,27 @@ namespace CustomHintPlugin
 
             if (player.DoNotTrack)
             {
-                Log.Debug($"Player {player.Nickname} ({player.UserId}) has DNT enabled. HUD will be shown.");
+                if (Plugin.Instance.HiddenHudPlayers.Remove(player.UserId))
+                {
+                    Plugin.Instance.SaveHiddenHudPlayers();
+                    Log.Debug($"Player {player.Nickname} ({player.UserId}) has DNT enabled and was removed from HiddenHudPlayers.");
+                }
+                return;
+            }
+
+            if (player.Role.Type == RoleTypeId.Spectator)
+            {
+                Log.Debug($"Player {player.Nickname} ({player.UserId}) is a spectator. HUD will be shown.");
                 return;
             }
 
             if (Plugin.Instance.HiddenHudPlayers.Contains(player.UserId))
             {
-                Log.Debug($"Player {player.Nickname} ({player.UserId}) is in HiddenHudPlayers. HUD will be hidden.");
-                Plugin.Instance.IsHintSystemEnabled = false;
+                Log.Debug($"Player {player.Nickname} ({player.UserId}) has HUD hidden.");
             }
             else
             {
-                Log.Debug($"Player {player.Nickname} ({player.UserId}) is not in HiddenHudPlayers. HUD will be shown.");
-                Plugin.Instance.IsHintSystemEnabled = true;
+                Log.Debug($"Player {player.Nickname} ({player.UserId}) has HUD shown.");
             }
         }
 
@@ -106,59 +113,27 @@ namespace CustomHintPlugin
             }
         }
 
-        public void LoadSpectatorHints()
-        {
-            string hintsFilePath = FileDotNet.GetPath("Hints.txt");
-
-            try
-            {
-                if (File.Exists(hintsFilePath))
-                {
-                    spectatorHints = File.ReadAllLines(hintsFilePath)
-                        .Where(line => !line.TrimStart().StartsWith("#") && !string.IsNullOrWhiteSpace(line))
-                        .ToList();
-
-                    Log.Debug($"Loaded {spectatorHints.Count} spectator hints.");
-                }
-                else
-                {
-                    Log.Warn("Hints.txt not found. No hints loaded.");
-                    spectatorHints = new List<string>();
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Warn($"Failed to load Hints.txt: {ex}");
-                spectatorHints = new List<string>();
-            }
-        }
-
         private IEnumerator<float> ContinuousHintDisplay()
         {
             while (_isRoundActive)
             {
-                if (Plugin.Instance.IsHintSystemEnabled)
+                TimeSpan roundDuration = DateTime.UtcNow - _roundStartTime;
+
+                foreach (var player in Player.List)
                 {
-                    TimeSpan roundDuration = DateTime.UtcNow - _roundStartTime;
-
-                    foreach (var player in Player.List)
+                    if (player.Role.Type == RoleTypeId.Spectator ||
+                        (!Plugin.Instance.Config.ExcludedRoles.Contains(RoleTypeId.Overwatch) &&
+                         player.Role.Type == RoleTypeId.Overwatch))
                     {
-                        if (Plugin.Instance.IsHudHiddenForPlayer(player))
-                            continue;
-
-                        if (player.Role.Type == RoleTypeId.Spectator ||
-                            (!Plugin.Instance.Config.ExcludedRoles.Contains(RoleTypeId.Overwatch) &&
-                             player.Role.Type == RoleTypeId.Overwatch))
+                        if (Plugin.Instance.Config.HintForSpectatorsIsEnabled)
                         {
-                            if (Plugin.Instance.Config.HintForSpectatorsIsEnabled)
-                            {
-                                DisplayHintForSpectators(player, roundDuration);
-                            }
+                            DisplayHintForSpectators(player, roundDuration);
                         }
-                        else if (!Plugin.Instance.Config.ExcludedRoles.Contains(player.Role.Type))
-                        {
-                            DisplayHint(player, roundDuration);
-                        }
+                    }
+                    else if (!Plugin.Instance.Config.ExcludedRoles.Contains(player.Role.Type) &&
+                             !Plugin.Instance.HiddenHudPlayers.Contains(player.UserId))
+                    {
+                        DisplayHint(player, roundDuration);
                     }
                 }
 
@@ -197,12 +172,15 @@ namespace CustomHintPlugin
             player.ShowHint(hintMessage, 1f);
         }
 
+
         private void DisplayHintForSpectators(Player player, TimeSpan roundDuration)
         {
-            if (randomizedHints.Count == 0)
+            string currentHint = randomizedHints.Count > 0 ? randomizedHints.Peek() : PreviousHint;
+
+            if (currentHint == null)
                 return;
 
-            string currentHint = randomizedHints.Peek();
+            PreviousHint = currentHint;
 
             string hintMessage = Plugin.Instance.Translation.HintMessageForSpectators
                 .Replace("{round_duration_hours}", roundDuration.Hours.ToString("D2"))
@@ -221,7 +199,16 @@ namespace CustomHintPlugin
             player.ShowHint(hintMessage, 1f);
         }
 
-        public string CurrentHint { get; private set; } = "Hint not available";
+        private void StartHintUpdater()
+        {
+            _hintUpdaterCoroutine = Timing.RunCoroutine(HintUpdater());
+        }
+
+        private void StopHintUpdater()
+        {
+            Timing.KillCoroutines(_hintUpdaterCoroutine);
+            CurrentHint = "Hint not available";
+        }
 
         private IEnumerator<float> HintUpdater()
         {
@@ -243,22 +230,13 @@ namespace CustomHintPlugin
             }
         }
 
-        private void StartHintUpdater()
-        {
-            _hintUpdaterCoroutine = Timing.RunCoroutine(HintUpdater());
-        }
-
-        private void StopHintUpdater()
-        {
-            Timing.KillCoroutines(_hintUpdaterCoroutine);
-            CurrentHint = "Hint not available";
-        }
-
         private string GetColoredRoleName(Player player)
         {
             return player.Group != null
                 ? $"<color={player.Group.BadgeColor ?? Plugin.Instance.Config.DefaultRoleColor}>{player.Group.BadgeText}</color>"
                 : $"<color={Plugin.Instance.Config.DefaultRoleColor}>{Plugin.Instance.Config.DefaultRoleName}</color>";
         }
+
+        public string CurrentHint { get; private set; } = "Hint not available";
     }
 }
