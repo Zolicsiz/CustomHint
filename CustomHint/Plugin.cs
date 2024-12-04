@@ -174,7 +174,7 @@ namespace CustomHintPlugin
                 input = ReplaceIgnoreCase(input, $"<color={pair.Key}>", $"<color={pair.Value}>");
             }
 
-            input = input.Replace(serverNamePlaceholder, "{servername}"); // Возвращаем плейсхолдер
+            input = input.Replace(serverNamePlaceholder, "{servername}");
 
             return input;
         }
