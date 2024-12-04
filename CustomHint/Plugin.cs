@@ -30,7 +30,7 @@ namespace CustomHintPlugin
 
         public override string Name => "CustomHint";
         public override string Author => "Narin";
-        public override Version Version => new Version(1, 2, 2);
+        public override Version Version => new Version(1, 3, 0);
         public override Version RequiredExiledVersion => new Version(8, 14, 0);
 
         public override void OnEnabled()
@@ -40,13 +40,13 @@ namespace CustomHintPlugin
             if (!Config.IsEnabled)
                 return;
 
+            GenerateHintsFile();
             LoadHiddenHudPlayers();
             EventHandlers = new EventHandlers();
 
             Exiled.Events.Handlers.Server.WaitingForPlayers += EventHandlers.OnWaitingForPlayers;
             Exiled.Events.Handlers.Server.RoundStarted += EventHandlers.OnRoundStarted;
             Exiled.Events.Handlers.Server.RoundEnded += EventHandlers.OnRoundEnded;
-
             Exiled.Events.Handlers.Player.Verified += EventHandlers.OnPlayerVerified;
 
             Log.Debug($"{Name} has been enabled.");
@@ -59,7 +59,6 @@ namespace CustomHintPlugin
             Exiled.Events.Handlers.Server.WaitingForPlayers -= EventHandlers.OnWaitingForPlayers;
             Exiled.Events.Handlers.Server.RoundStarted -= EventHandlers.OnRoundStarted;
             Exiled.Events.Handlers.Server.RoundEnded -= EventHandlers.OnRoundEnded;
-
             Exiled.Events.Handlers.Player.Verified -= EventHandlers.OnPlayerVerified;
 
             Timing.KillCoroutines(_hintCoroutine);
@@ -93,7 +92,7 @@ namespace CustomHintPlugin
                 {
                     HiddenHudPlayers = new HashSet<string>();
                     SaveHiddenHudPlayers();
-                    Log.Debug("Created new HUD configuration file.");
+                    Log.Info("Created new HUD configuration file.");
                 }
             }
             catch (Exception ex)
@@ -127,6 +126,25 @@ namespace CustomHintPlugin
             catch (Exception ex)
             {
                 Log.Warn($"Failed to save hidden HUD players: {ex}");
+            }
+        }
+
+        public void GenerateHintsFile()
+        {
+            string filePath = FileDotNet.GetPath("Hints.txt");
+
+            try
+            {
+                if (!File.Exists(filePath))
+                {
+                    string defaultContent = "# List of hints for {hints} placeholder\nHint 1\nHint 2\nHint 3";
+                    File.WriteAllText(filePath, defaultContent);
+                    Log.Info("Generated Hints.txt with default content.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warn($"Failed to create Hints.txt: {ex}");
             }
         }
 
