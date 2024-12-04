@@ -22,12 +22,12 @@ Localized READMEs
   <div>
     <img src="https://flagsapi.com/US/flat/64.png" height=30>
     <br>
-    <a href="documentation/README.md">English</a>
+    <a href="https://github.com/BTF-SCPSL/CustomHint/blob/master/READMEENG.md">English</a>
   </div>
   <br>
   <div>
     <img src="https://flagsapi.com/RU/flat/64.png" height=30>
     <br>
-    <a href="documentation/localization/README-Русский.md">Русский</a>
+    <a href="https://github.com/BTF-SCPSL/CustomHint/blob/master/READMERUS.md">Русский</a>
   </div>
 </div>
