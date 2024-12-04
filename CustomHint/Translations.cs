@@ -5,10 +5,7 @@ namespace CustomHintPlugin
 {
     public class Translations : ITranslation
     {
-        [Description("" +
-            "Hints" +
-            "" +
-            "Hint message for spectators.")]
+        [Description("Hint message for spectators.")]
         public string HintMessageForSpectators { get; set; } = "{servername}\n{ip}:{port}\n\n{player_nickname}, spec, duration: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.\nRole: {player_role}\nTPS: {tps}/60\n\n{hints}";
 
         [Description("Hint message for rounds lasting up to 59 seconds.")]
@@ -20,10 +17,7 @@ namespace CustomHintPlugin
         [Description("Hint message for rounds lasting 1 hour or more.")]
         public string HintMessageOverHour { get; set; } = "{servername}\n{ip}:{port}\n\nLong run, {player_nickname}! Duration: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.\nRole: {player_role}\nTPS: {tps}/60";
 
-        [Description("" +
-            "Commands" +
-            "" +
-            "CommandsMessage displayed when the HUD is successfully hidden.")]
+        [Description("Message displayed when the HUD is successfully hidden.")]
         public string HideHudSuccessMessage { get; set; } = "<color=green>You have successfully hidden the server HUD! To get the HUD back, use .showhud</color>";
 
         [Description("Message displayed when the HUD is already hidden.")]
