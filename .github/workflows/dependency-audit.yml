@@ -1,0 +1,26 @@
+name: Dependency Audit
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Раз в неделю
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install dotnet outdated
+      run: dotnet tool install --global dotnet-outdated-tool
+
+    - name: Run audit
+      run: dotnet outdated --output-format json > audit-results.json
+
+    - name: Upload audit results
+      uses: actions/upload-artifact@v3
+      with:
+        name: dependency-audit
+        path: audit-results.json
