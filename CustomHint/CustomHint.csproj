@@ -33,32 +33,32 @@
   <ItemGroup>
     <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Used\0Harmony.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="AdvancedHints">
-      <HintPath>..\..\..\..\Used\AdvancedHints.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\AdvancedHints.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\Used\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\..\..\..\Used\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="CommandSystem.Core">
-      <HintPath>..\..\..\..\Used\CommandSystem.Core.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\CommandSystem.Core.dll</HintPath>
     </Reference>
     <Reference Include="Exiled.API">
-      <HintPath>..\..\..\..\Used\Exiled.API.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\Exiled.API.dll</HintPath>
     </Reference>
     <Reference Include="Exiled.Events">
-      <HintPath>..\..\..\..\Used\Exiled.Events.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\Exiled.Events.dll</HintPath>
     </Reference>
     <Reference Include="Mirror">
-      <HintPath>..\..\..\..\Used\Mirror.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\Mirror.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Used\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PluginAPI">
       <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\PluginAPI.dll</HintPath>
@@ -72,15 +72,15 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\Used\UnityEngine.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\Used\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="YamlDotNet %281%29, Version=11.0.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Used\YamlDotNet.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\Файлы\Файлы\Хуйня какая-то\YamlDotNet (1).dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
