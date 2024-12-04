@@ -8,7 +8,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace CustomHintPlugin
 {
-    public class Plugin : Plugin<Config>
+    public class Plugin : Plugin<Config, Translations>
     {
         public static Plugin Instance { get; private set; }
         public EventHandlers EventHandlers { get; private set; }
