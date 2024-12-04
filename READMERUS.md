@@ -90,7 +90,7 @@ custom_hint:
   # Сообщение, отображаемое, когда команды отключены для раунда.
   commands_disabled_message: '<color=red>Commands .showhud and .hidehud are disabled for this round.</color>'
 ```
-И после локализации... Воуля! Всё готово! Можете рестартнуть *(полнотью)* сервер и CustomHint работает на отлично.  
+И после локализации... Voilà! Всё готово! Можете рестартнуть *(полнотью)* сервер и CustomHint работает на отлично.  
 Спасибо тем, кто использует данный плагин. Удачи Вам!  
 ## Placeholders
 | Placeholder       | Описание                                 |
