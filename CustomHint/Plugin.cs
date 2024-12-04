@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Exiled.API.Features;
 using MEC;
+using Newtonsoft.Json.Linq;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -15,7 +18,6 @@ namespace CustomHintPlugin
         public HashSet<string> HiddenHudPlayers { get; private set; } = new HashSet<string>();
 
         private CoroutineHandle _hintCoroutine;
-
         private string HudConfig = FileDotNet.GetPath("HiddenHudPlayers.yml");
 
         private static readonly IDeserializer Deserializer = new DeserializerBuilder()
@@ -25,6 +27,9 @@ namespace CustomHintPlugin
         private static readonly ISerializer Serializer = new SerializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
+
+        private const string RepositoryUrl = "https://api.github.com/repos/BTF-SCPSL/CustomHint/releases/latest";
+        private const string UserAgent = "CustomHint-Updater";
 
         public bool IsHintSystemEnabled { get; internal set; } = true;
 
@@ -44,7 +49,7 @@ namespace CustomHintPlugin
             LoadHiddenHudPlayers();
             EventHandlers = new EventHandlers();
 
-            Exiled.Events.Handlers.Server.WaitingForPlayers += EventHandlers.OnWaitingForPlayers;
+            Exiled.Events.Handlers.Server.WaitingForPlayers += OnWaitingForPlayers;
             Exiled.Events.Handlers.Server.RoundStarted += EventHandlers.OnRoundStarted;
             Exiled.Events.Handlers.Server.RoundEnded += EventHandlers.OnRoundEnded;
             Exiled.Events.Handlers.Player.Verified += EventHandlers.OnPlayerVerified;
@@ -53,10 +58,9 @@ namespace CustomHintPlugin
             base.OnEnabled();
         }
 
-
         public override void OnDisabled()
         {
-            Exiled.Events.Handlers.Server.WaitingForPlayers -= EventHandlers.OnWaitingForPlayers;
+            Exiled.Events.Handlers.Server.WaitingForPlayers -= OnWaitingForPlayers;
             Exiled.Events.Handlers.Server.RoundStarted -= EventHandlers.OnRoundStarted;
             Exiled.Events.Handlers.Server.RoundEnded -= EventHandlers.OnRoundEnded;
             Exiled.Events.Handlers.Player.Verified -= EventHandlers.OnPlayerVerified;
@@ -71,6 +75,169 @@ namespace CustomHintPlugin
             base.OnDisabled();
         }
 
+        private async void OnWaitingForPlayers()
+        {
+            Log.Info($"Current version of the plugin: v{Version}");
+            Log.Info("Checking for updates...");
+
+            try
+            {
+                var latestVersion = await GetLatestVersionAsync();
+
+                if (latestVersion == null)
+                {
+                    Log.Warn("Failed to fetch the latest plugin version.");
+                    return;
+                }
+
+                CompareVersions(latestVersion);
+            }
+            catch (Exception ex)
+            {
+                Log.Warn($"Error while checking for updates: {ex}");
+            }
+        }
+
+        private async Task<string> GetLatestVersionAsync()
+        {
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+
+                var response = await client.GetAsync(RepositoryUrl);
+                if (!response.IsSuccessStatusCode)
+                {
+                    Log.Warn($"Failed to fetch data from GitHub API. Status code: {response.StatusCode}");
+                    return null;
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                var json = JObject.Parse(content);
+
+                var tag = json["tag_name"]?.ToString();
+                var assets = json["assets"];
+
+                if (string.IsNullOrEmpty(tag) || assets == null)
+                    return null;
+
+                return tag;
+            }
+        }
+
+        private void CompareVersions(string latestVersion)
+        {
+            var currentVersion = Version.ToString();
+            var latestVersionClean = latestVersion.TrimStart('v');
+
+            int comparison = CompareSemanticVersions(currentVersion, latestVersionClean);
+
+            if (comparison < 0)
+            {
+                if (Config.AutoUpdater)
+                {
+                    Log.Warn("Attention! The plugin version is older than the latest version, downloading the update...");
+                    Task.Run(() => DownloadAndInstallLatestVersion());
+                }
+                else
+                {
+                    Log.Warn($"Attention! The plugin version is older than the latest version, it is recommended to update the plugin: https://github.com/BTF-SCPSL/CustomHint/releases/tag/{latestVersion}");
+                }
+            }
+            else if (comparison == 0)
+            {
+                Log.Info("No new version has been found. You are on the latest version of the plugin.");
+            }
+            else
+            {
+                Log.Info("No new version has been found. You must be using the pre-release version of the plugin.");
+            }
+        }
+
+        private int CompareSemanticVersions(string current, string latest)
+        {
+            var currentParts = current.Split('.');
+            var latestParts = latest.Split('.');
+
+            for (int i = 0; i < Math.Max(currentParts.Length, latestParts.Length); i++)
+            {
+                int currentPart = i < currentParts.Length ? int.Parse(currentParts[i]) : 0;
+                int latestPart = i < latestParts.Length ? int.Parse(latestParts[i]) : 0;
+
+                if (currentPart < latestPart) return -1;
+                if (currentPart > latestPart) return 1;
+            }
+
+            return 0;
+        }
+
+        private async Task DownloadAndInstallLatestVersion()
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+
+                    var response = await client.GetAsync(RepositoryUrl);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Log.Warn($"Failed to fetch release data. Status code: {response.StatusCode}");
+                        return;
+                    }
+
+                    var content = await response.Content.ReadAsStringAsync();
+                    var json = JObject.Parse(content);
+
+                    var assets = json["assets"];
+                    if (assets == null)
+                    {
+                        Log.Warn("No assets found in the release.");
+                        return;
+                    }
+
+                    string pluginsPath = Path.Combine(Paths.Plugins, "CustomHint", "Auto Updater");
+                    Directory.CreateDirectory(pluginsPath);
+
+                    string dependenciesPath = Path.Combine(Paths.Plugins, "dependencies");
+                    Directory.CreateDirectory(dependenciesPath);
+
+                    foreach (var asset in assets)
+                    {
+                        var downloadUrl = asset["browser_download_url"]?.ToString();
+                        var fileName = asset["name"]?.ToString();
+
+                        if (downloadUrl == null || fileName == null)
+                            continue;
+
+                        string targetPath;
+                        if (fileName.Equals("CustomHint.dll", StringComparison.OrdinalIgnoreCase) ||
+                            fileName.Equals("AdvancedHints.dll", StringComparison.OrdinalIgnoreCase))
+                        {
+                            targetPath = Path.Combine(Paths.Plugins, fileName);
+                        }
+                        else if (fileName.Equals("Newtonsoft.Json.dll", StringComparison.OrdinalIgnoreCase))
+                        {
+                            targetPath = Path.Combine(dependenciesPath, fileName);
+                        }
+                        else
+                        {
+                            targetPath = Path.Combine(pluginsPath, fileName);
+                        }
+
+                        var fileBytes = await client.GetByteArrayAsync(downloadUrl);
+                        File.WriteAllBytes(targetPath, fileBytes);
+
+                        Log.Info($"Downloaded and installed: {fileName} to {targetPath}");
+                    }
+
+                    Log.Info("The plugin has been successfully updated! Please restart the server using the command 'sr'.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warn($"Failed to download or install the update: {ex}");
+            }
+        }
 
         public void LoadHiddenHudPlayers()
         {
@@ -139,7 +306,7 @@ namespace CustomHintPlugin
                 {
                     string defaultContent = "# List of hints for {hints} placeholder\nHint 1\nHint 2\nHint 3";
                     File.WriteAllText(filePath, defaultContent);
-                    Log.Info("Generated Hints.txt with default content.");
+                    Log.Info("Generated Hints.txt config with default content.");
                 }
             }
             catch (Exception ex)
@@ -209,6 +376,5 @@ namespace CustomHintPlugin
 
             return input;
         }
-
     }
 }
