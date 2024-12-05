@@ -15,9 +15,9 @@
 ![Information](https://repobeats.axiom.co/api/embed/aa7588e5eac40914af302a99b6d146413eb22c41.svg "Repobeats analytics image")
 
 </div>
-<h1 align="center">
+<h2 align="center">
 Localized READMEs
-</h1>
+</h2>
 <div align="center">
   <div>
     <img src="https://flagsapi.com/US/flat/64.png" height=30>
