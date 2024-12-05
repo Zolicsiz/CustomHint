@@ -267,16 +267,5 @@ namespace CustomHintPlugin
         }
 
         public string CurrentHint { get; private set; } = "Hint not available";
-
-        public void ReloadHintConfiguration()
-        {
-            if (_isRoundActive)
-            {
-                Log.Debug("Configuration changed. Restarting hint update...");
-
-                Timing.KillCoroutines(_hintCoroutine);
-                _hintCoroutine = Timing.RunCoroutine(ContinuousHintDisplay());
-            }
-        }
     }
 }
