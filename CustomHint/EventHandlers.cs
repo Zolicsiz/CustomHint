@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using PlayerRoles;
 using System.Linq;
 using System.IO;
+using MapGeneration.Distributors;
+using PlayerRoles.PlayableScps.Scp079;
 
 namespace CustomHintPlugin
 {
@@ -143,9 +145,6 @@ namespace CustomHintPlugin
 
         private void DisplayHint(Player player, TimeSpan roundDuration)
         {
-            if (Plugin.Instance.IsHudHiddenForPlayer(player))
-                return;
-
             int classDCount = Player.List.Count(p => p.Role.Type == RoleTypeId.ClassD);
             int scientistCount = Player.List.Count(p => p.Role.Type == RoleTypeId.Scientist);
             int facilityGuardCount = Player.List.Count(p => p.Role.Type == RoleTypeId.FacilityGuard);
@@ -153,6 +152,9 @@ namespace CustomHintPlugin
             int ciCount = Player.List.Count(p => p.Role.Team == Team.ChaosInsurgency);
             int scpCount = Player.List.Count(p => p.Role.Team == Team.SCPs);
             int spectatorsCount = Player.List.Count(p => p.Role.Type == RoleTypeId.Spectator || p.Role.Type == RoleTypeId.Overwatch);
+
+            int generatorsActivated = Scp079Recontainer.AllGenerators.Count(generator => generator.Engaged);
+            int generatorsMax = Scp079Recontainer.AllGenerators.Count;
 
             string hintMessage;
 
@@ -180,6 +182,8 @@ namespace CustomHintPlugin
                 .Replace("{ci_num}", ciCount.ToString())
                 .Replace("{scp_num}", scpCount.ToString())
                 .Replace("{spectators_num}", spectatorsCount.ToString())
+                .Replace("{generators_activated}", generatorsActivated.ToString())
+                .Replace("{generators_max}", generatorsMax.ToString())
                 .Replace("{hints}", CurrentHint);
 
             hintMessage = Plugin.ReplaceColorsInString(hintMessage);
@@ -189,13 +193,6 @@ namespace CustomHintPlugin
 
         private void DisplayHintForSpectators(Player player, TimeSpan roundDuration)
         {
-            string currentHint = randomizedHints.Count > 0 ? randomizedHints.Peek() : PreviousHint;
-
-            if (currentHint == null)
-                return;
-
-            PreviousHint = currentHint;
-
             int classDCount = Player.List.Count(p => p.Role.Type == RoleTypeId.ClassD);
             int scientistCount = Player.List.Count(p => p.Role.Type == RoleTypeId.Scientist);
             int facilityGuardCount = Player.List.Count(p => p.Role.Type == RoleTypeId.FacilityGuard);
@@ -203,6 +200,9 @@ namespace CustomHintPlugin
             int ciCount = Player.List.Count(p => p.Role.Team == Team.ChaosInsurgency);
             int scpCount = Player.List.Count(p => p.Role.Team == Team.SCPs);
             int spectatorsCount = Player.List.Count(p => p.Role.Type == RoleTypeId.Spectator || p.Role.Type == RoleTypeId.Overwatch);
+
+            int generatorsActivated = Scp079Recontainer.AllGenerators.Count(generator => generator.Engaged);
+            int generatorsMax = Scp079Recontainer.AllGenerators.Count;
 
             string hintMessage = Plugin.Instance.Translation.HintMessageForSpectators
                 .Replace("{round_duration_hours}", roundDuration.Hours.ToString("D2"))
@@ -221,7 +221,9 @@ namespace CustomHintPlugin
                 .Replace("{ci_num}", ciCount.ToString())
                 .Replace("{scp_num}", scpCount.ToString())
                 .Replace("{spectators_num}", spectatorsCount.ToString())
-                .Replace("{hints}", currentHint);
+                .Replace("{generators_activated}", generatorsActivated.ToString())
+                .Replace("{generators_max}", generatorsMax.ToString())
+                .Replace("{hints}", CurrentHint);
 
             hintMessage = Plugin.ReplaceColorsInString(hintMessage);
 
