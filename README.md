@@ -1,7 +1,8 @@
 <h1 align="center">CustomHint</h1>
 <h6 align="center">A plugin that allows you to create your own custom HUD for the server.</h6>
 <div align="center">
-  
+
+![downloads](https://img.shields.io/github/downloads/BTF-SCPSL/CustomHint/total?logo=github&style=flat-square)
 ![Version](https://img.shields.io/github/v/release/BTF-SCPSL/CustomHint?label=Version&style=flat-square)
 ![License](https://img.shields.io/github/license/BTF-SCPSL/CustomHint?label=License&style=flat-square)
 ![Contributors](https://img.shields.io/github/contributors/BTF-SCPSL/CustomHint?label=Contributors&style=flat-square)
