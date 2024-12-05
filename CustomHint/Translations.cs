@@ -6,7 +6,7 @@ namespace CustomHintPlugin
     public class Translations : ITranslation
     {
         [Description("Hint message for spectators.")]
-        public string HintMessageForSpectators { get; set; } = "{servername}\n{ip}:{port}\n\n{player_nickname}, spec, duration: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.\nRole: {player_role}\nTPS: {tps}/60\n\n{hints}";
+        public string HintMessageForSpectators { get; set; } = "{servername}\n{ip}:{port}\n\n{player_nickname}, spec, duration: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.\nRole: {player_role}\nTPS: {tps}/60\n\nInformation:\nClass-D personnal: {classd_num} || Scientists: {scientist_num} || Facility Guards: {facilityguard_num} || MTF: {mtf_num}\n\n{hints}";
 
         [Description("Hint message for rounds lasting up to 59 seconds.")]
         public string HintMessageUnderMinute { get; set; } = "{servername}\n{ip}:{port}\n\nQuick start! {player_nickname}, round time: {round_duration_seconds}s.\nRole: {player_role}\nTPS: {tps}/60";
