@@ -6,7 +6,7 @@ namespace CustomHintPlugin
     public class Translations : ITranslation
     {
         [Description("Hint message for spectators.")]
-        public string HintMessageForSpectators { get; set; } = "{servername}\n{ip}:{port}\n\n{player_nickname}, spec, duration: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.\nRole: {player_role}\nTPS: {tps}/60\n\nInformation:\nClass-D personnal: {classd_num} || Scientists: {scientist_num} || Facility Guards: {facilityguard_num} || MTF: {mtf_num}\n\n{hints}";
+        public string HintMessageForSpectators { get; set; } = "{servername}\n{ip}:{port}\n\n{player_nickname}, spec, duration: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.\nRole: {player_role}\nTPS: {tps}/60\n\nInformation:\nClass-D personnal: {classd_num} || Scientists: {scientist_num} || Facility Guards: {facilityguard_num} || MTF: {mtf_num}\nGenerators activated: {generators_activated}/{generators_max}\n\n{hints}";
 
         [Description("Hint message for rounds lasting up to 59 seconds.")]
         public string HintMessageUnderMinute { get; set; } = "{servername}\n{ip}:{port}\n\nQuick start! {player_nickname}, round time: {round_duration_seconds}s.\nRole: {player_role}\nTPS: {tps}/60";
@@ -34,14 +34,5 @@ namespace CustomHintPlugin
 
         [Description("Message displayed when commands are disabled on the server.")]
         public string CommandDisabledMessage { get; set; } = "<color=red>This command is disabled on the server.</color>";
-
-        [Description("Message displayed when the hint system is toggled on.")]
-        public string ToggleOnMessage { get; set; } = "<color=green>Hint system and commands are now enabled for this round.</color>";
-
-        [Description("Message displayed when the hint system is toggled off.")]
-        public string ToggleOffMessage { get; set; } = "<color=red>Hint system and commands are now disabled for this round.</color>";
-
-        [Description("Message displayed when commands are disabled for the round.")]
-        public string CommandsDisabledMessage { get; set; } = "<color=red>Commands .showhud and .hidehud are disabled for this round.</color>";
     }
 }
