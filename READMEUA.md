@@ -74,23 +74,23 @@ custom_hint:
     Role: {player_role}
     TPS: {tps}/60
   # Повідомлення, яке відображається при успішному прихованні HUD.
-  hide_hud_success_message: '<color=green>Ви успішно приховали HUD сервера! Щоб повернути HUD, використовуйте .showhud</color>'
+  hide_hud_success_message: '<color=green>You have successfully hidden the server HUD! To get the HUD back, use .showhud</color>'
   # Повідомлення, яке відображається, коли HUD вже прихований.
-  hide_hud_already_hidden_message: '<color=red>Ви вже приховали HUD сервера.</color>'
+  hide_hud_already_hidden_message: '<color=red>You''ve already hidden the HUD server.</color>'
   # Повідомлення, яке відображається при успішному поверненні HUD.
-  show_hud_success_message: '<color=green>Ви успішно повернули HUD сервера! Щоб приховати знову, використовуйте .hidehud</color>'
+  show_hud_success_message: '<color=green>You have successfully returned the server HUD! To hide again, use .hidehud</color>'
   # Повідомлення, яке відображається, коли HUD вже відображається.
-  show_hud_already_shown_message: '<color=red>HUD сервера вже відображається.</color>'
+  show_hud_already_shown_message: '<color=red>You already have the server HUD displayed.</color>'
   # Повідомлення, яке відображається при ввімкненні режиму DNT (Do Not Track).
-  dnt_enabled_message: '<color=red>Вимкніть режим DNT (Do Not Track).</color>'
+  dnt_enabled_message: '<color=red>Disable DNT (Do Not Track) mode.</color>'
   # Повідомлення, яке відображається, коли команди відключені на сервері.
-  command_disabled_message: '<color=red>Ця команда відключена на сервері.</color>'
-  # Повідомлення, яке відображається, коли система підказок увімкнена.
-  toggle_on_message: '<color=green>Система підказок і команди тепер увімкнені для цього раунду.</color>'
-  # Повідомлення, яке відображається, коли система підказок вимкнена.
-  toggle_off_message: '<color=red>Система підказок і команди тепер вимкнені для цього раунду.</color>'
+  command_disabled_message: '<color=red>This command is disabled on the server.</color>'
+  # Повідомлення, яке відображається, коли система HUD увімкнена.
+  toggle_on_message: '<color=green>Hint system and commands are now enabled for this round.</color>'
+  # Повідомлення, яке відображається, коли система HUD-команд вимкнена.
+  toggle_off_message: '<color=red>Hint system and commands are now disabled for this round.</color>'
   # Повідомлення, яке відображається, коли команди вимкнені для раунду.
-  commands_disabled_message: '<color=red>Команди .showhud і .hidehud вимкнені для цього раунду.</color>'
+  commands_disabled_message: '<color=red>Commands .showhud and .hidehud are disabled for this round.</color>'
 ```
 Після локалізації... Voilà! Все готово! Ви можете повністю перезапустити сервер, і CustomHint працюватиме відмінно.  
 Дякую тим, хто використовує цей плагін. Успіхів вам!  
