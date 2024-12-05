@@ -146,6 +146,14 @@ namespace CustomHintPlugin
             if (Plugin.Instance.IsHudHiddenForPlayer(player))
                 return;
 
+            int classDCount = Player.List.Count(p => p.Role.Type == RoleTypeId.ClassD);
+            int scientistCount = Player.List.Count(p => p.Role.Type == RoleTypeId.Scientist);
+            int facilityGuardCount = Player.List.Count(p => p.Role.Type == RoleTypeId.FacilityGuard);
+            int mtfCount = Player.List.Count(p => p.Role.Team == Team.FoundationForces);
+            int ciCount = Player.List.Count(p => p.Role.Team == Team.ChaosInsurgency);
+            int scpCount = Player.List.Count(p => p.Role.Team == Team.SCPs);
+            int spectatorsCount = Player.List.Count(p => p.Role.Type == RoleTypeId.Spectator || p.Role.Type == RoleTypeId.Overwatch);
+
             string hintMessage;
 
             if (roundDuration.TotalSeconds <= 59)
@@ -165,13 +173,19 @@ namespace CustomHintPlugin
                 .Replace("{servername}", Server.Name)
                 .Replace("{ip}", Server.IpAddress)
                 .Replace("{port}", Server.Port.ToString())
+                .Replace("{classd_num}", classDCount.ToString())
+                .Replace("{scientist_num}", scientistCount.ToString())
+                .Replace("{facilityguard_num}", facilityGuardCount.ToString())
+                .Replace("{mtf_num}", mtfCount.ToString())
+                .Replace("{ci_num}", ciCount.ToString())
+                .Replace("{scp_num}", scpCount.ToString())
+                .Replace("{spectators_num}", spectatorsCount.ToString())
                 .Replace("{hints}", CurrentHint);
 
             hintMessage = Plugin.ReplaceColorsInString(hintMessage);
 
             player.ShowHint(hintMessage, 1f);
         }
-
 
         private void DisplayHintForSpectators(Player player, TimeSpan roundDuration)
         {
@@ -181,6 +195,14 @@ namespace CustomHintPlugin
                 return;
 
             PreviousHint = currentHint;
+
+            int classDCount = Player.List.Count(p => p.Role.Type == RoleTypeId.ClassD);
+            int scientistCount = Player.List.Count(p => p.Role.Type == RoleTypeId.Scientist);
+            int facilityGuardCount = Player.List.Count(p => p.Role.Type == RoleTypeId.FacilityGuard);
+            int mtfCount = Player.List.Count(p => p.Role.Team == Team.FoundationForces);
+            int ciCount = Player.List.Count(p => p.Role.Team == Team.ChaosInsurgency);
+            int scpCount = Player.List.Count(p => p.Role.Team == Team.SCPs);
+            int spectatorsCount = Player.List.Count(p => p.Role.Type == RoleTypeId.Spectator || p.Role.Type == RoleTypeId.Overwatch);
 
             string hintMessage = Plugin.Instance.Translation.HintMessageForSpectators
                 .Replace("{round_duration_hours}", roundDuration.Hours.ToString("D2"))
@@ -192,6 +214,13 @@ namespace CustomHintPlugin
                 .Replace("{servername}", Server.Name)
                 .Replace("{ip}", Server.IpAddress)
                 .Replace("{port}", Server.Port.ToString())
+                .Replace("{classd_num}", classDCount.ToString())
+                .Replace("{scientist_num}", scientistCount.ToString())
+                .Replace("{facilityguard_num}", facilityGuardCount.ToString())
+                .Replace("{mtf_num}", mtfCount.ToString())
+                .Replace("{ci_num}", ciCount.ToString())
+                .Replace("{scp_num}", scpCount.ToString())
+                .Replace("{spectators_num}", spectatorsCount.ToString())
                 .Replace("{hints}", currentHint);
 
             hintMessage = Plugin.ReplaceColorsInString(hintMessage);
@@ -238,5 +267,16 @@ namespace CustomHintPlugin
         }
 
         public string CurrentHint { get; private set; } = "Hint not available";
+
+        public void ReloadHintConfiguration()
+        {
+            if (_isRoundActive)
+            {
+                Log.Debug("Configuration changed. Restarting hint update...");
+
+                Timing.KillCoroutines(_hintCoroutine);
+                _hintCoroutine = Timing.RunCoroutine(ContinuousHintDisplay());
+            }
+        }
     }
 }
