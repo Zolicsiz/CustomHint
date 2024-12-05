@@ -4,7 +4,6 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Exiled.API.Features;
-using Exiled.Events.EventArgs.Warhead;
 using MEC;
 using Newtonsoft.Json.Linq;
 using YamlDotNet.Serialization;
@@ -17,7 +16,6 @@ namespace CustomHintPlugin
         public static Plugin Instance { get; private set; }
         public EventHandlers EventHandlers { get; private set; }
         public HashSet<string> HiddenHudPlayers { get; private set; } = new HashSet<string>();
-        public static bool WarheadEnabled { get; private set; }
 
         private CoroutineHandle _hintCoroutine;
         private string HudConfig = FileDotNet.GetPath("HiddenHudPlayers.yml");
