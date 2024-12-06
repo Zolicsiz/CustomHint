@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Exiled.API.Features;
 using MEC;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -181,7 +182,7 @@ namespace CustomHintPlugin
                     var response = await client.GetAsync(RepositoryUrl);
                     if (!response.IsSuccessStatusCode)
                     {
-                        Log.Warn($"Failed to fetch release data. Status code: {response.StatusCode}");
+                        Log.Error($"Failed to fetch release data. Status code: {response.StatusCode}");
                         return;
                     }
 
@@ -191,7 +192,7 @@ namespace CustomHintPlugin
                     var assets = json["assets"];
                     if (assets == null)
                     {
-                        Log.Warn("No assets found in the release.");
+                        Log.Error("No assets found in the release.");
                         return;
                     }
 
@@ -230,12 +231,13 @@ namespace CustomHintPlugin
                         Log.Info($"Downloaded and installed: {fileName} to {targetPath}");
                     }
 
-                    Log.Info("The plugin has been successfully updated! Please restart the server using the command 'sr'.");
+                    Server.ExecuteCommand("rnr");
+                    Log.Info("The plugin has been successfully updated! Changes are applied at the end of the round.");
                 }
             }
             catch (Exception ex)
             {
-                Log.Warn($"Failed to download or install the update: {ex}");
+                Log.Error($"Failed to download or install the update: {ex}");
             }
         }
 
@@ -264,7 +266,7 @@ namespace CustomHintPlugin
             }
             catch (Exception ex)
             {
-                Log.Warn($"Failed to load hidden HUD players: {ex}");
+                Log.Error($"Failed to load hidden HUD players: {ex}");
                 HiddenHudPlayers = new HashSet<string>();
             }
         }
@@ -292,7 +294,7 @@ namespace CustomHintPlugin
             }
             catch (Exception ex)
             {
-                Log.Warn($"Failed to save hidden HUD players: {ex}");
+                Log.Error($"Failed to save hidden HUD players: {ex}");
             }
         }
 
