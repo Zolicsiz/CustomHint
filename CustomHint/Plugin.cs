@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using Exiled.API.Features;
 using MEC;
 using Newtonsoft.Json.Linq;
-using UnityEngine;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -17,6 +17,7 @@ namespace CustomHintPlugin
         public static Plugin Instance { get; private set; }
         public EventHandlers EventHandlers { get; private set; }
         public HashSet<string> HiddenHudPlayers { get; private set; } = new HashSet<string>();
+        public static int MaxTps { get; private set; } = 60;
 
         private CoroutineHandle _hintCoroutine;
         private string HudConfig = FileDotNet.GetPath("HiddenHudPlayers.yml");
@@ -37,7 +38,7 @@ namespace CustomHintPlugin
         public override string Name => "CustomHint";
         public override string Author => "Narin";
         public override Version Version => new Version(1, 3, 0);
-        public override Version RequiredExiledVersion => new Version(8, 14, 0);
+        public override Version RequiredExiledVersion => new Version(9, 0, 0);
 
         public override void OnEnabled()
         {
@@ -48,6 +49,8 @@ namespace CustomHintPlugin
 
             GenerateHintsFile();
             LoadHiddenHudPlayers();
+            DetermineMaxTps();
+
             EventHandlers = new EventHandlers();
 
             Exiled.Events.Handlers.Server.WaitingForPlayers += OnWaitingForPlayers;
@@ -74,6 +77,34 @@ namespace CustomHintPlugin
 
             Log.Debug($"{Name} has been disabled.");
             base.OnDisabled();
+        }
+
+        private void DetermineMaxTps()
+        {
+            try
+            {
+                Type serverStaticType = typeof(ServerStatic);
+
+                FieldInfo tickrateField = serverStaticType.GetField("_serverTickrate", BindingFlags.NonPublic | BindingFlags.Static);
+
+                if (tickrateField != null)
+                {
+                    object tickrateValue = tickrateField.GetValue(null);
+
+                    if (tickrateValue is short tickrate)
+                    {
+                        MaxTps = tickrate;
+                        Log.Info($"Max TPS determined dynamically: {MaxTps}");
+                        return;
+                    }
+                }
+
+                Log.Warn("Failed to determine Max TPS dynamically. Defaulting to 60.");
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error determining Max TPS dynamically: {ex}");
+            }
         }
 
         private async void OnWaitingForPlayers()
