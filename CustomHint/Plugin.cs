@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Exiled.API.Features;
 using MEC;
@@ -83,27 +84,31 @@ namespace CustomHintPlugin
         {
             try
             {
-                Type serverStaticType = typeof(ServerStatic);
+                string configDirectory = Path.Combine(Paths.Configs, Server.Port.ToString());
+                string configFile = Path.Combine(configDirectory, "config_gameplay.txt");
 
-                FieldInfo tickrateField = serverStaticType.GetField("_serverTickrate", BindingFlags.NonPublic | BindingFlags.Static);
-
-                if (tickrateField != null)
+                if (!File.Exists(configFile))
                 {
-                    object tickrateValue = tickrateField.GetValue(null);
-
-                    if (tickrateValue is short tickrate)
-                    {
-                        MaxTps = tickrate;
-                        Log.Info($"Max TPS determined dynamically: {MaxTps}");
-                        return;
-                    }
+                    Log.Warn($"Config file not found: {configFile}. Defaulting to 60 TPS.");
+                    return;
                 }
 
-                Log.Warn("Failed to determine Max TPS dynamically. Defaulting to 60.");
+                string configContent = File.ReadAllText(configFile);
+
+                Match match = Regex.Match(configContent, @"server_tickrate\s*:\s*(\d+)");
+                if (match.Success && int.TryParse(match.Groups[1].Value, out int parsedTickrate))
+                {
+                    MaxTps = parsedTickrate;
+                    Log.Info($"Max TPS determined from config file: {MaxTps}");
+                }
+                else
+                {
+                    Log.Warn("Failed to parse server_tickrate from config file. Defaulting to 60 TPS.");
+                }
             }
             catch (Exception ex)
             {
-                Log.Error($"Error determining Max TPS dynamically: {ex}");
+                Log.Error($"Error while determining Max TPS: {ex}");
             }
         }
 
