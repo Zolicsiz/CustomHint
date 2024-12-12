@@ -118,7 +118,7 @@ Thank you to everyone who uses this plugin. Best of luck!
 | {classd_num}           | Number of Class-D personnel.         |
 | {scientist_num}        | Number of Scientists.                |
 | {facilityguard_num}    | Number of Facility Guards.           |
-| {mtf_num}              | Number of MTF members.               |
+| {mtf_num}              | Number of MTFs.               |
 | {ci_num}               | Number of Chaos Insurgents.          |
 | {scp_num}              | Number of SCP objects.               |
 | {spectators_num}       | Number of spectators (including Overwatch). |
