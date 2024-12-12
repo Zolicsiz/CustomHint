@@ -1,5 +1,4 @@
 # CustomHint
-
 ## Description
 A plugin that allows you to create your own custom HUD for the server.  
 To ensure proper functionality, the plugin requires **AdvancedHints** and **Newtonsoft.Json**, which are included in the releases for all versions.  
