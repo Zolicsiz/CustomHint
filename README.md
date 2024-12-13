@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Downloads](https://img.shields.io/github/downloads/BTF-SCPSL/CustomHint/total?label=Downloads&style=flat-square)
-![PLUGIN USED ON](http://api.backtofuture.site:4262)
+![PLUGIN USED ON](http://193.164.17.175:4262)
 ![Version](https://img.shields.io/github/v/release/BTF-SCPSL/CustomHint?label=Version&style=flat-square)
 ![License](https://img.shields.io/github/license/BTF-SCPSL/CustomHint?label=License&style=flat-square)
 ![Contributors](https://img.shields.io/github/contributors/BTF-SCPSL/CustomHint?label=Contributors&style=flat-square)
