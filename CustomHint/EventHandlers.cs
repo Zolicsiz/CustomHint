@@ -144,35 +144,13 @@ namespace CustomHintPlugin
 
         private void DisplayHint(Player player, TimeSpan roundDuration)
         {
-            int classDCount = 0;
-            int scientistCount = 0;
-            int facilityGuardCount = 0;
+              
             int mtfCount = 0;
             int ciCount = 0;
             int scpCount = 0;
-            int spectatorsCount = 0;
 
             foreach (Player p in Player.List)
             {
-                switch (p.Role.Type)
-                {
-                    case RoleTypeId.ClassD:
-                        classDCount++;
-                        break;
-                    case RoleTypeId.Scientist:
-                        scientistCount++;
-                        break;
-                    case RoleTypeId.FacilityGuard:
-                        facilityGuardCount++;
-                        break;
-                    case RoleTypeId.Spectator:
-                    case RoleTypeId.Overwatch:
-                        spectatorsCount++;
-                        break;
-                    default:
-                        break;
-                }
-
                 switch (p.Role.Team)
                 {
                     case Team.FoundationForces:
@@ -213,13 +191,13 @@ namespace CustomHintPlugin
                 .Replace("{servername}", Server.Name)
                 .Replace("{ip}", Server.IpAddress)
                 .Replace("{port}", Server.Port.ToString())
-                .Replace("{classd_num}", classDCount.ToString())
-                .Replace("{scientist_num}", scientistCount.ToString())
-                .Replace("{facilityguard_num}", facilityGuardCount.ToString())
+                .Replace("{classd_num}", Player.List.Where(x=>x.Role.Type == RoleTypeId.ClassD).Count().ToString())
+                .Replace("{scientist_num}", Player.List.Where(x=>x.Role.Type == RoleTypeId.Scientist).Count().ToString())
+                .Replace("{facilityguard_num}", Player.List.Where(x=>x.Role.Type == RoleTypeId.FacilityGuard).Count().ToString())
                 .Replace("{mtf_num}", mtfCount.ToString())
                 .Replace("{ci_num}", ciCount.ToString())
                 .Replace("{scp_num}", scpCount.ToString())
-                .Replace("{spectators_num}", spectatorsCount.ToString())
+                .Replace("{spectators_num}", Player.List.Where(x=>x.Role.Type == RoleTypeId.Overwatch).Count().ToString())
                 .Replace("{generators_activated}", generatorsActivated.ToString())
                 .Replace("{generators_max}", generatorsMax.ToString())
                 .Replace("{hints}", CurrentHint);
@@ -231,35 +209,15 @@ namespace CustomHintPlugin
 
         private void DisplayHintForSpectators(Player player, TimeSpan roundDuration)
         {
-            int classDCount = 0;
-            int scientistCount = 0;
-            int facilityGuardCount = 0;
+   
+ 
             int mtfCount = 0;
             int ciCount = 0;
             int scpCount = 0;
-            int spectatorsCount = 0;
+
 
             foreach (Player p in Player.List)
             {
-                switch (p.Role.Type)
-                {
-                    case RoleTypeId.ClassD:
-                        classDCount++;
-                        break;
-                    case RoleTypeId.Scientist:
-                        scientistCount++;
-                        break;
-                    case RoleTypeId.FacilityGuard:
-                        facilityGuardCount++;
-                        break;
-                    case RoleTypeId.Spectator:
-                    case RoleTypeId.Overwatch:
-                        spectatorsCount++;
-                        break;
-                    default:
-                        break;
-                }
-
                 switch (p.Role.Team)
                 {
                     case Team.FoundationForces:
@@ -291,13 +249,13 @@ namespace CustomHintPlugin
                 .Replace("{servername}", Server.Name)
                 .Replace("{ip}", Server.IpAddress)
                 .Replace("{port}", Server.Port.ToString())
-                .Replace("{classd_num}", classDCount.ToString())
-                .Replace("{scientist_num}", scientistCount.ToString())
-                .Replace("{facilityguard_num}", facilityGuardCount.ToString())
+                .Replace("{classd_num}", Player.List.Where(x=>x.Role.Type == RoleTypeId.ClassD).Count().ToString())
+                .Replace("{scientist_num}", Player.List.Where(x=>x.Role.Type == RoleTypeId.Scientist).Count().ToString())
+                .Replace("{facilityguard_num}", Player.List.Where(x=>x.Role.Type == RoleTypeId.FacilityGuard).Count().ToString())
                 .Replace("{mtf_num}", mtfCount.ToString())
                 .Replace("{ci_num}", ciCount.ToString())
                 .Replace("{scp_num}", scpCount.ToString())
-                .Replace("{spectators_num}", spectatorsCount.ToString())
+                .Replace("{spectators_num}", Player.List.Where(x=>x.Role.Type == RoleTypeId.Overwatch).Count().ToString())
                 .Replace("{generators_activated}", generatorsActivated.ToString())
                 .Replace("{generators_max}", generatorsMax.ToString())
                 .Replace("{hints}", CurrentHint);
