@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Exiled.API.Features;
 using MEC;
 using Newtonsoft.Json.Linq;
-using UnityEngine;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
