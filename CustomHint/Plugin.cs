@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Exiled.API.Features;
 using MEC;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -18,7 +17,6 @@ namespace CustomHintPlugin
         public static Plugin Instance { get; private set; }
         public EventHandlers EventHandlers { get; private set; }
         public HashSet<string> HiddenHudPlayers { get; private set; } = new HashSet<string>();
-        public static int MaxTps { get; private set; } = 60;
 
         private CoroutineHandle _hintCoroutine;
         private string HudConfig = FileDotNet.GetPath("HiddenHudPlayers.yml");
@@ -50,8 +48,6 @@ namespace CustomHintPlugin
 
             GenerateHintsFile();
             LoadHiddenHudPlayers();
-            DetermineMaxTps();
-
             EventHandlers = new EventHandlers();
 
             Exiled.Events.Handlers.Server.WaitingForPlayers += OnWaitingForPlayers;
@@ -78,38 +74,6 @@ namespace CustomHintPlugin
 
             Log.Debug($"{Name} has been disabled.");
             base.OnDisabled();
-        }
-
-        private void DetermineMaxTps()
-        {
-            try
-            {
-                string configDirectory = Path.Combine(Paths.Configs, Server.Port.ToString());
-                string configFile = Path.Combine(configDirectory, "config_gameplay.txt");
-
-                if (!File.Exists(configFile))
-                {
-                    Log.Warn($"Config file not found: {configFile}. Defaulting to 60 TPS.");
-                    return;
-                }
-
-                string configContent = File.ReadAllText(configFile);
-
-                Match match = Regex.Match(configContent, @"server_tickrate\s*:\s*(\d+)");
-                if (match.Success && int.TryParse(match.Groups[1].Value, out int parsedTickrate))
-                {
-                    MaxTps = parsedTickrate;
-                    Log.Info($"Max TPS determined from config file: {MaxTps}");
-                }
-                else
-                {
-                    Log.Warn("Failed to parse server_tickrate from config file. Defaulting to 60 TPS.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"Error while determining Max TPS: {ex}");
-            }
         }
 
         private async void OnWaitingForPlayers()
