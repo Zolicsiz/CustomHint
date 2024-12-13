@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using PlayerRoles;
 using System.Linq;
 using System.IO;
-using MapGeneration.Distributors;
 using PlayerRoles.PlayableScps.Scp079;
 
 namespace CustomHintPlugin
@@ -145,13 +144,52 @@ namespace CustomHintPlugin
 
         private void DisplayHint(Player player, TimeSpan roundDuration)
         {
-            int classDCount = Player.List.Count(p => p.Role.Type == RoleTypeId.ClassD);
-            int scientistCount = Player.List.Count(p => p.Role.Type == RoleTypeId.Scientist);
-            int facilityGuardCount = Player.List.Count(p => p.Role.Type == RoleTypeId.FacilityGuard);
-            int mtfCount = Player.List.Count(p => p.Role.Team == Team.FoundationForces);
-            int ciCount = Player.List.Count(p => p.Role.Team == Team.ChaosInsurgency);
-            int scpCount = Player.List.Count(p => p.Role.Team == Team.SCPs);
-            int spectatorsCount = Player.List.Count(p => p.Role.Type == RoleTypeId.Spectator || p.Role.Type == RoleTypeId.Overwatch);
+            int classDCount = 0;
+            int scientistCount = 0;
+            int facilityGuardCount = 0;
+            int mtfCount = 0;
+            int ciCount = 0;
+            int scpCount = 0;
+            int spectatorsCount = 0;
+
+            foreach (Player p in Player.List)
+            {
+                switch (p.Role.Type)
+                {
+                    case RoleTypeId.ClassD:
+                        classDCount++;
+                        break;
+                    case RoleTypeId.Scientist:
+                        scientistCount++;
+                        break;
+                    case RoleTypeId.FacilityGuard:
+                        facilityGuardCount++;
+                        break;
+                    case RoleTypeId.Spectator:
+                    case RoleTypeId.Overwatch:
+                        spectatorsCount++;
+                        break;
+                    default:
+                        break;
+                }
+
+                switch (p.Role.Team)
+                {
+                    case Team.FoundationForces:
+                        if (p.Role.Type != RoleTypeId.FacilityGuard && p.Role.Type != RoleTypeId.Scientist)
+                            mtfCount++;
+                        break;
+                    case Team.ChaosInsurgency:
+                        if (p.Role.Type != RoleTypeId.ClassD)
+                            ciCount++;
+                        break;
+                    case Team.SCPs:
+                        scpCount++;
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             int generatorsActivated = Scp079Recontainer.AllGenerators.Count(generator => generator.Engaged);
             int generatorsMax = Scp079Recontainer.AllGenerators.Count;
@@ -193,13 +231,52 @@ namespace CustomHintPlugin
 
         private void DisplayHintForSpectators(Player player, TimeSpan roundDuration)
         {
-            int classDCount = Player.List.Count(p => p.Role.Type == RoleTypeId.ClassD);
-            int scientistCount = Player.List.Count(p => p.Role.Type == RoleTypeId.Scientist);
-            int facilityGuardCount = Player.List.Count(p => p.Role.Type == RoleTypeId.FacilityGuard);
-            int mtfCount = Player.List.Count(p => p.Role.Team == Team.FoundationForces);
-            int ciCount = Player.List.Count(p => p.Role.Team == Team.ChaosInsurgency);
-            int scpCount = Player.List.Count(p => p.Role.Team == Team.SCPs);
-            int spectatorsCount = Player.List.Count(p => p.Role.Type == RoleTypeId.Spectator || p.Role.Type == RoleTypeId.Overwatch);
+            int classDCount = 0;
+            int scientistCount = 0;
+            int facilityGuardCount = 0;
+            int mtfCount = 0;
+            int ciCount = 0;
+            int scpCount = 0;
+            int spectatorsCount = 0;
+
+            foreach (Player p in Player.List)
+            {
+                switch (p.Role.Type)
+                {
+                    case RoleTypeId.ClassD:
+                        classDCount++;
+                        break;
+                    case RoleTypeId.Scientist:
+                        scientistCount++;
+                        break;
+                    case RoleTypeId.FacilityGuard:
+                        facilityGuardCount++;
+                        break;
+                    case RoleTypeId.Spectator:
+                    case RoleTypeId.Overwatch:
+                        spectatorsCount++;
+                        break;
+                    default:
+                        break;
+                }
+
+                switch (p.Role.Team)
+                {
+                    case Team.FoundationForces:
+                        if (p.Role.Type != RoleTypeId.FacilityGuard && p.Role.Type != RoleTypeId.Scientist)
+                            mtfCount++;
+                        break;
+                    case Team.ChaosInsurgency:
+                        if (p.Role.Type != RoleTypeId.ClassD)
+                            ciCount++;
+                        break;
+                    case Team.SCPs:
+                        scpCount++;
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             int generatorsActivated = Scp079Recontainer.AllGenerators.Count(generator => generator.Engaged);
             int generatorsMax = Scp079Recontainer.AllGenerators.Count;
