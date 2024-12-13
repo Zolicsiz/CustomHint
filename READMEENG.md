@@ -1,28 +1,32 @@
 # CustomHint
 ## Description
 A plugin that allows you to create your own custom HUD for the server.  
-For the plugin to work properly, you need to use **AdvancedHints**, which is available in releases for all versions.  
-For suggestions, please ping in the EXILED Discord server or message: @narin4ik  
+To ensure proper functionality, the plugin requires **AdvancedHints** and **Newtonsoft.Json**, which are included in the releases for all versions.  
+For suggestions, please ping me on the EXILED Discord server or DM: @narin4ik.  
+
 ## Guide
+
 ### How to install the plugin?
-Go to the [latest release.](https://github.com/BTF-SCPSL/CustomHint/releases) Download all the *dll* files from the release and upload them to your server (`.../EXILED/Plugins`).  
-After installation, *start/restart* your server.  
-Once you’ve completed these steps, a configuration will be generated in `.../EXILED/Configs` in the `[port]-config.yml` and `[port]-translation.yml` files.
+Go to the [latest release](https://github.com/BTF-SCPSL/CustomHint/releases). Download all the *dll* files from the release. Then upload the following files to the server: *CustomHint.dll* and *AdvancedHints.dll* to the Plugins folder (`.../EXILED/Plugins`), and *Newtonsoft.Json.dll* to the dependencies folder (`.../EXILED/Plugins/dependencies`).  
+After installation, *start/restart* the server.  
+Once you've completed all the steps, the configuration will be generated in `.../EXILED/Configs` under `[port]-config.yml` and `[port]-translation.yml`.
 
 ### Configuring the plugin
-Let’s start with the simpler part: `[port]-config.yml`. Use the *CTRL+F* combination and search for `custom_hint` to locate the plugin configuration.  
-The default configuration in `[port]-config.yml` looks like this, with all the options explained:
+We'll start with the easiest part, `[port]-config.yml`. Use the *CTRL+F* shortcut to search for `custom_hint` and locate the plugin configuration.  
+The default `[port]-config.yml` looks like this, with all points explained:
 ```yaml
 custom_hint:
-  # Is the plugin enabled (bool)?
+  # Plugin enabled (bool)?
   is_enabled: true
   # Debug mode?
   debug: false
-  # Enable or disable Hint for spectators.
+  # Enable or disable automatic plugin updates.
+  auto_updater: true
+  # Enable or disable hints for spectators.
   hint_for_spectators_is_enabled: true
-  # Interval for changing spectator hints (in seconds).
+  # The interval for changing spectator hints (in seconds).
   hint_message_time: 5
-  # Default role name for players without roles.
+  # Default role name for players without a role.
   default_role_name: 'Player'
   # Default role color (for players without roles).
   default_role_color: 'white'
@@ -34,76 +38,90 @@ custom_hint:
   # Enable or disable HUD-related commands.
   enable_hud_commands: true
 ```
-After configuring `[port]-config.yml`, move to `[port]-translation.yml`, use *CTRL+F* again and search for `custom_hint`.  
-You will see the following:
+After configuring `[port]-config.yml`, move on to `[port]-translation.yml`. Use *CTRL+F* again to search for `custom_hint`.  
+You'll find the following:
 ```yaml
 custom_hint:
-  # Hint for spectators.
+  # Hint message for spectators.
   hint_message_for_spectators: |-
-    {servername}
+    <size=75%>{servername}
     {ip}:{port}
 
-    {player_nickname}, spec, duration: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.
-    Role: {player_role}
+    {player_nickname}, spec, round time: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.
+    Server Role: {player_serverrole}
+    Game Role: {player_gamerole}
     TPS: {tps}/60
 
-    {hints}
-  # Hint for rounds lasting up to 59 seconds.
+    Information:
+    Class-D: {classd_num} || Scientists: {scientist_num} || Facility Guards: {facilityguard_num} || MTF: {mtf_num}
+    Generators activated: {generators_activated}/{generators_max}
+    Players Total: {players_total} || Players Alive: {players_alive} || SCPs Alive: {scp_alive}
+    Time: {time}</size>
+  # Hint message for rounds lasting up to 59 seconds.
   hint_message_under_minute: |-
-    {servername}
+    <size=75%>{servername}
     {ip}:{port}
 
     Quick start! {player_nickname}, round time: {round_duration_seconds}s.
-    Role: {player_role}
+    Server Role: {player_serverrole} || Game Role: {player_gamerole}
     TPS: {tps}/60
-  # Hint for rounds lasting from 1 minute to 59 minutes and 59 seconds.
+
+    Time: {time}</size>
+  # Hint message for rounds lasting from 1 minute to 59 minutes and 59 seconds.
   hint_message_under_hour: |-
-    {servername}
+    <size=75%>{servername}
     {ip}:{port}
 
-    Still going, {player_nickname}! Time: {round_duration_minutes}:{round_duration_seconds}.
-    Role: {player_role}
+    Still going, {player_nickname}! Round time: {round_duration_minutes}:{round_duration_seconds}.
+    Server Role: {player_serverrole} || Game Role: {player_gamerole}
     TPS: {tps}/60
-  # Hint for rounds lasting 1 hour or longer.
+
+    Time: {time}</size>
+  # Hint message for rounds lasting 1 hour or more.
   hint_message_over_hour: |-
-    {servername}
+    <size=75%>{servername}
     {ip}:{port}
 
-    Long run, {player_nickname}! Duration: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.
-    Role: {player_role}
+    Long run, {player_nickname}! Round time: {round_duration_hours}:{round_duration_minutes}:{round_duration_seconds}.
+    Server Role: {player_serverrole} || Game Role: {player_gamerole}
     TPS: {tps}/60
-  # Message displayed when HUD is successfully hidden.
+
+    Time: {time}</size>
+  # Message displayed when the HUD is successfully hidden.
   hide_hud_success_message: '<color=green>You have successfully hidden the server HUD! To get the HUD back, use .showhud</color>'
-  # Message displayed when HUD is already hidden.
+  # Message displayed when the HUD is already hidden.
   hide_hud_already_hidden_message: '<color=red>You''ve already hidden the HUD server.</color>'
-  # Message displayed when HUD is successfully restored.
+  # Message displayed when the HUD is successfully shown.
   show_hud_success_message: '<color=green>You have successfully returned the server HUD! To hide again, use .hidehud</color>'
-  # Message displayed when HUD is already visible.
+  # Message displayed when the HUD is already shown.
   show_hud_already_shown_message: '<color=red>You already have the server HUD displayed.</color>'
   # Message displayed when DNT (Do Not Track) mode is enabled.
   dnt_enabled_message: '<color=red>Disable DNT (Do Not Track) mode.</color>'
   # Message displayed when commands are disabled on the server.
   command_disabled_message: '<color=red>This command is disabled on the server.</color>'
-  # Message displayed when the hint system is enabled.
-  toggle_on_message: '<color=green>Hint system and commands are now enabled for this round.</color>'
-  # Message displayed when the hint system is disabled.
-  toggle_off_message: '<color=red>Hint system and commands are now disabled for this round.</color>'
-  # Message displayed when commands are disabled for the round.
-  commands_disabled_message: '<color=red>Commands .showhud and .hidehud are disabled for this round.</color>'
 ```
-And after localization... Voilà! Everything is ready! You can restart *(completely)* the server, and CustomHint will work perfectly.  
-Thanks to everyone using this plugin. Good luck!  
+And after localization... Voilà! Everything is ready! You can restart the server *(fully)*, and CustomHint will work perfectly.  
+Thank you to everyone who uses this plugin. Best of luck!  
 
 ## Placeholders
-| Placeholder       | Description                               |
-| ----------------- | ----------------------------------------- |
-| {servername}      | Server name.                             |
-| {ip}              | Server IP address.                       |
-| {port}            | Server port.                             |
-| {tps}             | Server TPS.                              |
-| {player_nickname} | Player nickname.                         |
-| {player_role}     | Player role.                             |
-| {round_duration_seconds} | Round duration in seconds.         |
-| {round_duration_minutes} | Round duration in minutes.         |
-| {round_duration_hours}   | Round duration in hours.           |
-| {hints}           | Hints from the Hints.txt file.           |
+| Placeholder            | Description                           |
+| ---------------------- | ------------------------------------- |
+| {servername}           | Server name.                         |
+| {ip}                   | Server IP address.                   |
+| {port}                 | Server port.                         |
+| {tps}                  | Server TPS.                          |
+| {player_nickname}      | Player's nickname.                   |
+| {player_role}          | Player's role.                       |
+| {round_duration_seconds}| Round duration in seconds.           |
+| {round_duration_minutes}| Round duration in minutes.           |
+| {round_duration_hours} | Round duration in hours.             |
+| {classd_num}           | Number of Class-D personnel.         |
+| {scientist_num}        | Number of Scientists.                |
+| {facilityguard_num}    | Number of Facility Guards.           |
+| {mtf_num}              | Number of MTFs.               |
+| {ci_num}               | Number of Chaos Insurgents.          |
+| {scp_num}              | Number of SCP objects.               |
+| {spectators_num}       | Number of spectators (including Overwatch). |
+| {generators_activated} | Number of activated generators.       |
+| {generators_max}       | Maximum number of generators.         |
+| {hints}                | Hints from the Hints.txt file.        |
